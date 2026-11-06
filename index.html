@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <title>18.studio Keycap Maker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { display: none; width: 0; height: 0; }
   body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; height: 100dvh; background: #1d1f24; color: #eee; overflow: hidden; }
-  #panel { width: 330px; padding: 20px; background: #262930; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  #panel { width: 345px; padding: 20px; background: #262930; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   h1 { font-size: 20px; margin: 0; }
   label { font-size: 13px; color: #aaa; display: block; margin-bottom: 6px; }
   select, input[type=search], input[type=text], input[type=number] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; }
@@ -15,13 +16,18 @@
   .swatches { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .swatches button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; cursor: pointer; }
   .tabs { display: flex; gap: 6px; }
-  .tabs button, .btn { flex: 1; padding: 9px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; cursor: pointer; font-size: 13px; }
-  .tabs button.active { background: #4aa3df; border-color: #4aa3df; color: #fff; }
+  .tabs button, .btn { flex: 1; padding: 9px 8px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; cursor: pointer; font-size: 13px; white-space: nowrap; }
+  .tabs button.active { background: #4aa3df; border-color: #4aa3df; color: #fff; font-weight: 600; }
   .btn.primary { background: #7bc67b; border-color: #7bc67b; color: #111; font-weight: 600; }
-  .btn.orange { background: #f2a541; border-color: #f2a541; color: #111; font-weight: 600; }
+  .btn.blue { background: #4aa3df; border-color: #4aa3df; color: #fff; font-weight: 600; }
   .hint { font-size: 12px; color: #888; margin-top: 4px; }
   .row { display: flex; gap: 8px; }
   .box { background: #1d1f24; border: 1px solid #3a3d45; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .chips { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .chip { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: #262930; border: 1px solid #444; border-radius: 8px; padding: 5px 8px; font-size: 12.5px; color: #ddd; }
+  .chip-actions { display: flex; align-items: center; gap: 4px; }
+  .chip-actions button { background: #1d1f24; border: 1px solid #444; border-radius: 4px; color: #ddd; cursor: pointer; font-size: 12px; padding: 2px 6px; line-height: 1.2; }
+  .chip-actions button.del { color: #f26d6d; border-color: #633; }
   #editing { font-weight: 600; color: #4aa3df; }
   #view { flex: 1; position: relative; min-width: 0; min-height: 0; }
   #view canvas { display: block; touch-action: none; }
@@ -34,17 +40,15 @@
     #panel { flex: 1; width: 100%; padding: 14px 16px 24px; gap: 14px; border-top: 1px solid #3a3d45; }
     h1 { font-size: 18px; }
     select, input[type=search], input[type=text], input[type=number] { font-size: 16px; }
-    #model { max-height: 150px; }
     .swatches button { width: 30px; height: 30px; }
-    .tabs button, .btn { padding: 10px; font-size: 14px; }
+    .tabs button, .btn { padding: 9px 6px; font-size: 13px; }
     #tip { font-size: 11px; bottom: 8px; }
   }
 </style>
 <script type="importmap">
 { "imports": {
   "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-  "fflate": "https://unpkg.com/fflate@0.8.2/esm/browser.js"
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
 } }
 </script>
 </head>
@@ -52,104 +56,121 @@
 <div id="panel">
   <h1>18.studio Keycap Maker</h1>
   <div class="tabs">
-    <button id="tabLib" class="active">Design library</button>
-    <button id="tabText">Custom text</button>
+    <button id="tabText" class="active">Văn bản</button>
+    <button id="tabBase">Đế</button>
+    <button id="tabPreview">Xem trước</button>
   </div>
 
-  <!-- Library mode -->
-  <div id="libSection">
-    <label>Keycap design</label>
-    <input type="search" id="search" placeholder="Search (e.g. A, cat, apple)...">
-    <select id="model" size="10" style="margin-top:6px"></select>
-  </div>
-
-  <!-- Custom text mode -->
-  <div id="textSection" class="hidden" style="display:flex;flex-direction:column;gap:14px">
+  <!-- Custom text & icon mode -->
+  <div id="textSection" style="display:flex;flex-direction:column;gap:14px">
     <div>
-      <label>Text</label>
+      <label>Văn bản</label>
       <input type="text" id="textInput" value="montree" maxlength="60">
     </div>
     <div>
-      <label>Letters per keycap</label>
+      <label>Số lượng ký tự trên mỗi keycap</label>
       <input type="number" id="perCap" min="1" max="6" value="1">
       <div class="hint" id="capCount"></div>
     </div>
-    <div>
-      <label>Font (.ttf / .otf)</label>
-      <input type="file" id="fontFile" accept=".ttf,.otf">
-      <div class="hint" id="fontName">Default: Helvetiker</div>
-    </div>
-    <div class="row">
-      <div style="flex:1"><label>Text size (mm)</label><input type="number" id="textSize" min="2" max="16" step="0.5" value="11"></div>
-      <div style="flex:1"><label>Raise (mm)</label><input type="number" id="textDepth" min="0.2" max="3" step="0.1" value="0.6"></div>
-    </div>
-    <div>
-      <label>Font weight: <span id="weightName">Bold</span></label>
-      <input type="range" id="fontWeight" min="0" max="6" step="1" value="4" style="width:100%">
-      <div class="hint">Thickens or thins the letter outlines — works with any font.</div>
+    <div class="box">
+      <label style="margin-bottom:0">Chèn keycap biểu tượng</label>
+      <input type="search" id="iconSearch" placeholder="Tìm biểu tượng (vd: Trái tim, Mèo)...">
+      <select id="iconSelect"></select>
+      <div class="row">
+        <button class="btn" id="addIconStart">+ Thêm đầu</button>
+        <button class="btn" id="addIconEnd">+ Thêm cuối</button>
+      </div>
+      <div id="addedIcons" class="chips"></div>
     </div>
   </div>
 
-  <div class="box">
-    <div class="row" style="align-items:center">
-      <div style="flex:1">Editing: <span id="editing">All keys</span></div>
-      <button class="btn" id="selectAll" style="flex:0 0 auto">Select all</button>
-    </div>
-    <div class="hint" style="margin-top:-6px">Click a keycap in the 3D view to color it individually.</div>
+  <!-- Base settings & color -->
+  <div id="baseSection" class="box hidden">
     <div>
-      <label>Keycap color</label>
+      <label>Số khe đế (Slots)</label>
+      <select id="baseSlots">
+        <option value="auto">Tự động theo số keycap</option>
+        <option value="1">1 khe</option>
+        <option value="2">2 khe</option>
+        <option value="3">3 khe</option>
+        <option value="4">4 khe</option>
+        <option value="5">5 khe</option>
+        <option value="6">6 khe</option>
+        <option value="7">7 khe</option>
+        <option value="8">8 khe</option>
+        <option value="9">9 khe</option>
+        <option value="10">10 khe</option>
+      </select>
+      <div class="hint" id="baseSlotHint"></div>
+    </div>
+    <div>
+      <label>Màu đế (Base color)</label>
+      <input type="color" id="baseColor" value="#2b2e38">
+      <div class="swatches" data-target="baseColor"></div>
+    </div>
+  </div>
+
+  <!-- Keycap colors -->
+  <div id="keyColorBox" class="box">
+    <div class="row" style="align-items:center">
+      <div style="flex:1">Chỉnh sửa: <span id="editing">Tất cả</span></div>
+      <button class="btn" id="selectAll" style="flex:0 0 auto">Chọn tất cả</button>
+    </div>
+    <div class="hint" style="margin-top:-6px">Bấm vào keycap muốn chỉnh màu riêng lẻ</div>
+    <div>
+      <label>Màu keycap</label>
       <input type="color" id="capColor" value="#f4f1ea">
       <div class="swatches" data-target="capColor"></div>
     </div>
     <div>
-      <label>Legend color</label>
+      <label>Màu chữ / biểu tượng</label>
       <input type="color" id="legendColor" value="#e2574c">
       <div class="swatches" data-target="legendColor"></div>
     </div>
   </div>
 
   <div>
-    <label>Export</label>
-    <label style="margin-top:4px">3MF preset (Bambu Studio)</label>
-    <select id="printerPreset">
-      <option value="X1C">Bambu Lab X1 Carbon</option>
-      <option value="X1">Bambu Lab X1</option>
-      <option value="X1E">Bambu Lab X1E</option>
-      <option value="P1S">Bambu Lab P1S</option>
-      <option value="P1P">Bambu Lab P1P</option>
-      <option value="A1">Bambu Lab A1</option>
-      <option value="A1M">Bambu Lab A1 mini</option>
-      <option value="none">Colors only (no presets)</option>
-    </select>
-    <div class="hint" id="presetHint" style="margin-bottom:8px"></div>
-    <button class="btn orange" id="export3mf" style="width:100%">Download 3MF (with colors)</button>
-    <div class="hint" id="colorInfo"></div>
-    <button class="btn primary" id="exportAll" style="width:100%;margin-top:10px">Download STL (single file)</button>
-    <button class="btn" id="exportParts" style="width:100%;margin-top:6px">Download STL keycap + legend separately</button>
+    <label>Lưu thiết kế</label>
+    <button class="btn primary" id="exportPng" style="width:100%;padding:11px">Xuất hình ảnh (PNG)</button>
+    
   </div>
 </div>
-<div id="view"><div id="loading"></div><div id="tip">Drag to rotate · Pinch/scroll to zoom · Tap a key to select</div></div>
+<div id="view"><div id="loading"></div><div id="tip">made by montree</div></div>
 
 <script type="module">
 import * as THREE from 'three';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TTFLoader } from 'three/addons/loaders/TTFLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { zipSync, strToU8 } from 'fflate';
 
 const PALETTE = ['#f4f1ea','#1e1e1e','#e2574c','#f2a541','#f7d84a','#7bc67b','#4aa3df','#8a6fdf','#f48fb1','#9e9e9e'];
-const TOP_Z = 5.0, EPS = 0.02;   // blank keycap top surface; legends are raised above it
-const CAP_SIZE = 18, GAP = 4;    // keycap footprint (mm) and spacing between caps
+const TOP_Z = 5.0, EPS = 0.02;
+const CAP_SIZE = 18, GAP = 4;
 const BLANK_FILE = 'obj_16_keycap.stl';
-const MAX_FILAMENTS = 16;        // Bambu AMS limit (4 AMS x 4 slots)
+const DEFAULT_TTF = 'SVN-Comic Sans MS.ttf';
+const TEXT_SIZE = 11, TEXT_DEPTH = 0.6, FONT_WEIGHT_OFFSET = 0.04;
+
+const BASE_STYLE1_FILES = {
+  1: 'obj_1_1 slot - switch hole.stl',
+  2: 'obj_2_2 slots - switch hole.stl',
+  3: 'obj_3_3 slots - switch hole.stl',
+  4: 'obj_4_4 slots - switch hole.stl',
+  5: 'obj_5_5 slots - switch hole.stl',
+  6: 'obj_7_6 slots - switch hole.stl',
+  7: 'obj_8_7 slots - switch hole.stl',
+  8: 'obj_9_8 slots - switch hole.stl',
+  9: 'obj_10_9 slots - switch hole.stl',
+  10: 'obj_6_10 slots - switch hole.stl'
+};
+const BASE_PITCH = 20.5;
+const BASE_KEYCHAIN_OFFSET_X = 1.94;
+const PREVIEW_CAP_Z = 14.5;
 
 // ---------- Scene ----------
 const view = document.getElementById('view');
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(devicePixelRatio);
 view.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
@@ -168,32 +189,35 @@ scene.add(display);
 
 let currentWidth = null, userRotated = false;
 controls.addEventListener('start', () => { userRotated = true; controls.autoRotate = false; });
-function frameCamera(width) {
+function frameCamera(width, targetZ = 3) {
+  controls.target.z = targetZ;
   if (currentWidth === width) return;
   const aspect = Math.max(0.4, (view.clientWidth || 1) / (view.clientHeight || 1));
   const effWidth = aspect < 1 ? width / aspect : width;
   const d = Math.max(30, effWidth * 1.1);
   if (currentWidth === null) {
-    camera.position.set(0, -d, d);
-    controls.target.set(0, 0, 3);
+    camera.position.set(0, -d, d + targetZ);
+    controls.target.set(0, 0, targetZ);
     controls.autoRotateSpeed = 1.5;
   } else {
-    // Keep the current rotation angle, only scaling distance to fit the new width
     const offset = camera.position.clone().sub(controls.target);
-    const dir = offset.lengthSq() > 0 ? offset.normalize() : new THREE.Vector3(0, -1, 1).normalize();
-    camera.position.copy(controls.target).addScaledVector(dir, d * Math.SQRT2);
+    const dirVec = offset.lengthSq() > 0 ? offset.normalize() : new THREE.Vector3(0, -1, 1).normalize();
+    camera.position.copy(controls.target).addScaledVector(dirVec, d * Math.SQRT2);
   }
   controls.autoRotate = !userRotated && width < 40;
   currentWidth = width;
 }
 
-// ---------- Per-key colors ----------
+// ---------- Per-key & Base colors ----------
 const defaults = { cap: '#f4f1ea', legend: '#e2574c' };
-let keyColors = [];   // [{cap, legend}] per key index, persists across rebuilds
-let keys = [];        // [{group, capMat, legMat, label}]
-let selected = -1;    // -1 = all keys
+let keyColors = [];
+let keys = [];
+let selected = -1;
+let baseMesh = null;
+let baseMat = null;
 
 const capColor = document.getElementById('capColor'), legendColor = document.getElementById('legendColor');
+const baseColor = document.getElementById('baseColor');
 const editingEl = document.getElementById('editing');
 
 function colorsFor(i) { return keyColors[i] ||= { ...defaults }; }
@@ -207,7 +231,7 @@ function refreshMaterials() {
     k.capMat.emissive.setHex(glow);
     k.legMat.emissive.setHex(glow);
   });
-  updateColorInfo();
+  if (baseMat) baseMat.color.set(baseColor.value);
 }
 
 function select(i) {
@@ -215,7 +239,7 @@ function select(i) {
   const c = i < 0 ? defaults : colorsFor(i);
   capColor.value = c.cap;
   legendColor.value = c.legend;
-  editingEl.textContent = i < 0 ? 'All keys' : `Key ${i + 1}${keys[i].label ? ' (' + keys[i].label + ')' : ''}`;
+  editingEl.textContent = i < 0 ? 'Tất cả' : `Phím ${i + 1}${keys[i]?.label ? ' (' + keys[i].label + ')' : ''}`;
   refreshMaterials();
 }
 
@@ -230,6 +254,7 @@ function setColor(part, value) {
 }
 capColor.oninput = () => setColor('cap', capColor.value);
 legendColor.oninput = () => setColor('legend', legendColor.value);
+baseColor.oninput = refreshMaterials;
 document.getElementById('selectAll').onclick = () => select(-1);
 document.querySelectorAll('.swatches').forEach(box => PALETTE.forEach(col => {
   const b = document.createElement('button');
@@ -242,7 +267,6 @@ document.querySelectorAll('.swatches').forEach(box => PALETTE.forEach(col => {
   box.appendChild(b);
 }));
 
-// Click a key to select it (ignore drags)
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
 let downAt = null;
 renderer.domElement.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
@@ -252,11 +276,11 @@ renderer.domElement.addEventListener('pointerup', e => {
   pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   raycaster.setFromCamera(pointer, camera);
   const hit = raycaster.intersectObjects(display.children, true)[0];
-  if (hit) select(hit.object.parent.userData.index);
+  if (hit && hit.object.parent?.userData.index !== undefined) select(hit.object.parent.userData.index);
   else select(-1);
 });
 
-// ---------- STL loading: split each file into keycap + legend geometries ----------
+// ---------- STL loading: keycaps & bases ----------
 function splitGeometry(geo) {
   geo.computeBoundingBox();
   const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
@@ -278,352 +302,406 @@ function splitGeometry(geo) {
   return { cap: make(cap), legend: make(leg) };
 }
 
+function centerBaseGeometry(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox;
+  const cx = (bb.min.x + bb.max.x) / 2 + BASE_KEYCHAIN_OFFSET_X;
+  const cy = (bb.min.y + bb.max.y) / 2;
+  geo.translate(-cx, -cy, -bb.min.z);
+  return geo;
+}
+
 const stlLoader = new STLLoader();
 const cache = {};
+const baseCache = {};
 const loadingEl = document.getElementById('loading');
+
 async function getParts(file) {
   if (!cache[file]) cache[file] = splitGeometry(await stlLoader.loadAsync('Chunky+Keycaps_stls/' + encodeURIComponent(file)));
   return cache[file];
+}
+
+async function getBaseGeo(slots) {
+  const s = Math.max(1, Math.min(10, slots));
+  if (!baseCache[s]) {
+    const path = `Compact+Fidget+Clicker+-+Base_stls/${encodeURIComponent(BASE_STYLE1_FILES[s])}`;
+    baseCache[s] = centerBaseGeometry(await stlLoader.loadAsync(path));
+  }
+  return baseCache[s];
 }
 
 function clearDisplay() {
   display.traverse(o => { if (o.isMesh) { if (o.userData.ownGeo) o.geometry.dispose(); o.material.dispose(); } });
   display.clear();
   keys = [];
+  baseMesh = null;
+  baseMat = null;
 }
 
-function addKey(capGeo, legGeo, x, y, label, ownLegend) {
+function addKey(capGeo, legGeo, x, y, z, label, ownLegend) {
   const index = keys.length;
   const group = new THREE.Group();
-  group.position.set(x, y, 0);
+  group.position.set(x, y, z);
   group.userData.index = index;
   const capMat = new THREE.MeshStandardMaterial({ roughness: 0.55 });
   const legMat = new THREE.MeshStandardMaterial({ roughness: 0.4 });
   const cap = new THREE.Mesh(capGeo, capMat);
   cap.userData.part = 'cap';
   group.add(cap);
-  if (legGeo) {
+  if (legGeo && legGeo.attributes.position.count > 0) {
     const leg = new THREE.Mesh(legGeo, legMat);
     leg.userData.part = 'legend';
     leg.userData.ownGeo = ownLegend;
     group.add(leg);
   }
   display.add(group);
-  keys.push({ group, capMat, legMat, label });
+  keys.push({ group, capMat, legMat, label, x, y });
 }
 
-function finishBuild(width) {
+function addBase(geo) {
+  baseMat = new THREE.MeshStandardMaterial({ color: baseColor.value, roughness: 0.55 });
+  baseMesh = new THREE.Mesh(geo, baseMat);
+  baseMesh.userData.part = 'base';
+  display.add(baseMesh);
+}
+
+function finishBuild(width, targetZ = 3) {
   keyColors.length = Math.max(keyColors.length, keys.length);
   if (selected >= keys.length) selected = -1;
   select(selected);
   loadingEl.textContent = '';
-  frameCamera(width);
+  frameCamera(width, targetZ);
 }
 
-// ---------- Library mode ----------
-let currentFile = null;
-async function showLibrary() {
-  if (!currentFile) return;
-  loadingEl.textContent = 'Loading…';
-  const parts = await getParts(currentFile);
-  if (mode !== 'lib') return;
-  clearDisplay();
-  addKey(parts.cap, parts.legend, 0, 0, '', false);
-  finishBuild(CAP_SIZE);
-}
-
-// ---------- Custom text mode ----------
+// ---------- Keycap sequence (Text + Icons at ANY position) ----------
+let mode = 'text';
 let font = null;
-const fontNameEl = document.getElementById('fontName');
-new FontLoader().load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_regular.typeface.json', f => {
-  if (!font) { font = f; if (mode === 'text') showText(); }
-});
-
-document.getElementById('fontFile').onchange = async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  try {
-    const json = new TTFLoader().parse(await file.arrayBuffer());
-    font = new FontLoader().parse(json);
-    fontNameEl.textContent = 'Using: ' + file.name;
-    showText();
-  } catch (err) {
-    fontNameEl.textContent = 'Could not read font: ' + err.message;
-  }
-};
-
-// Weight presets: outline offset as a fraction of text size (negative = thinner)
-const WEIGHTS = [
-  ['Thin', -0.05], ['Light', -0.025], ['Regular', 0], ['Medium', 0.02],
-  ['Bold', 0.04], ['Extra Bold', 0.065], ['Black', 0.09]
-];
-const weightInput = document.getElementById('fontWeight');
-function makeLegend(str, size, depth) {
-  const offset = WEIGHTS[weightInput.value][1] * size;
-  const geo = new TextGeometry(str, {
-    font, size, height: depth, curveSegments: 6,
-    // A zero-height bevel with an outline offset grows/shrinks the glyphs without changing the depth
-    bevelEnabled: offset !== 0, bevelThickness: 0, bevelSize: 0, bevelOffset: offset, bevelSegments: 1
-  });
-  geo.computeBoundingBox();
-  const bb = geo.boundingBox;
-  const w = bb.max.x - bb.min.x, h = bb.max.y - bb.min.y;
-  const maxW = CAP_SIZE - 4;                         // keep 2 mm margin on each side
-  const s = Math.min(1, maxW / w, maxW / h);
-  geo.translate(-(bb.min.x + w / 2), -(bb.min.y + h / 2), 0);
-  geo.scale(s, s, 1);
-  geo.translate(0, 0, TOP_Z - 0.05);                 // sink slightly into the cap so they fuse when printed
-  return geo;
-}
+let icons = []; // [{name, file, afterText}]
 
 const textInput = document.getElementById('textInput'), perCapInput = document.getElementById('perCap');
 const capCountEl = document.getElementById('capCount');
-async function showText() {
-  if (mode !== 'text') return;
-  if (!font) { loadingEl.textContent = 'Loading font…'; return; }
-  const blank = await getParts(BLANK_FILE);
+const baseSlotsSelect = document.getElementById('baseSlots');
+const baseSlotHint = document.getElementById('baseSlotHint');
+const iconSearch = document.getElementById('iconSearch');
+const iconSelect = document.getElementById('iconSelect');
+const addedIconsEl = document.getElementById('addedIcons');
+
+function getTextChunks() {
   const chars = [...textInput.value.replace(/\s+/g, '')];
   const per = Math.max(1, Math.min(6, parseInt(perCapInput.value) || 1));
   const chunks = [];
   for (let i = 0; i < chars.length; i += per) chunks.push(chars.slice(i, i + per).join(''));
-  if (!chunks.length) chunks.push('');
-  capCountEl.textContent = `${chunks.length} keycap${chunks.length > 1 ? 's' : ''} will be made`;
-
-  const size = parseFloat(document.getElementById('textSize').value) || 11;
-  const depth = parseFloat(document.getElementById('textDepth').value) || 0.6;
-  clearDisplay();
-  const maxCols = window.innerWidth <= 768 ? 5 : 10;
-  const pitch = CAP_SIZE + GAP, cols = Math.min(chunks.length, maxCols);
-  chunks.forEach((str, i) => {
-    const x = (i % cols - (cols - 1) / 2) * pitch;
-    const y = -Math.floor(i / cols) * pitch;
-    addKey(blank.cap, str ? makeLegend(str, size, depth) : null, x, y, str, true);
-  });
-  finishBuild(cols * pitch);
+  return chunks;
 }
-['textInput', 'perCap', 'textSize', 'textDepth'].forEach(id => document.getElementById(id).oninput = showText);
-weightInput.oninput = () => {
-  document.getElementById('weightName').textContent = WEIGHTS[weightInput.value][0];
-  showText();
+
+function getSequence() {
+  const chunks = getTextChunks();
+  const T = chunks.length;
+  icons.forEach(ic => { ic.afterText = Math.max(0, Math.min(T, ic.afterText)); });
+  const seq = [];
+  for (let t = 0; t <= T; t++) {
+    icons.forEach((ic, idx) => {
+      if (ic.afterText === t) seq.push({ type: 'icon', file: ic.file, label: ic.name, iconIdx: idx });
+    });
+    if (t < T) seq.push({ type: 'text', label: chunks[t], textIdx: t });
+  }
+  return seq;
+}
+
+function getTextModeItems() {
+  const seq = getSequence();
+  return seq.length ? seq : [{ type: 'text', label: '' }];
+}
+
+function updateIconControls() {
+  const seq = getSequence();
+  addedIconsEl.innerHTML = '';
+  seq.forEach((it, seqIdx) => {
+    if (it.type !== 'icon') return;
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    const title = document.createElement('span');
+    title.textContent = `Phím ${seqIdx + 1}: ${it.label}`;
+    const actions = document.createElement('div');
+    actions.className = 'chip-actions';
+
+    const leftBtn = document.createElement('button');
+    leftBtn.textContent = '◀';
+    leftBtn.title = 'Dịch sang trái';
+    leftBtn.disabled = seqIdx === 0;
+    leftBtn.onclick = () => moveIcon(it.iconIdx, -1);
+
+    const rightBtn = document.createElement('button');
+    rightBtn.textContent = '▶';
+    rightBtn.title = 'Dịch sang phải';
+    rightBtn.disabled = seqIdx === seq.length - 1;
+    rightBtn.onclick = () => moveIcon(it.iconIdx, 1);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del';
+    delBtn.textContent = '×';
+    delBtn.title = 'Xóa biểu tượng';
+    delBtn.onclick = () => { icons.splice(it.iconIdx, 1); refreshScene(); };
+
+    actions.append(leftBtn, rightBtn, delBtn);
+    chip.append(title, actions);
+    addedIconsEl.appendChild(chip);
+  });
+}
+
+function moveIcon(iconIdx, dir) {
+  const seq = getSequence();
+  const pos = seq.findIndex(it => it.type === 'icon' && it.iconIdx === iconIdx);
+  const targetPos = pos + dir;
+  if (targetPos < 0 || targetPos >= seq.length) return;
+  const neighbor = seq[targetPos];
+  if (neighbor.type === 'text') {
+    icons[iconIdx].afterText += dir;
+  } else {
+    const otherIdx = neighbor.iconIdx;
+    const tmp = icons[iconIdx];
+    icons[iconIdx] = icons[otherIdx];
+    icons[otherIdx] = tmp;
+  }
+  refreshScene();
+}
+
+document.getElementById('addIconStart').onclick = () => {
+  const opt = iconSelect.selectedOptions[0];
+  if (!opt) return;
+  icons.unshift({ name: opt.text, file: opt.value, afterText: 0 });
+  refreshScene();
+};
+document.getElementById('addIconEnd').onclick = () => {
+  const opt = iconSelect.selectedOptions[0];
+  if (!opt) return;
+  icons.push({ name: opt.text, file: opt.value, afterText: getTextChunks().length });
+  refreshScene();
 };
 
+function getActiveSlots() {
+  if (baseSlotsSelect.value !== 'auto') return parseInt(baseSlotsSelect.value);
+  return Math.max(1, Math.min(10, getTextModeItems().length));
+}
+
+function updateSlotHint() {
+  const s = getActiveSlots();
+  baseSlotHint.textContent = `Đang dùng: Đế ${s} khe (${s} slot${s > 1 ? 's' : ''})`;
+}
+
+// ---------- Default TTF Font (Fixed to SVN-Comic Sans MS.ttf for customers) ----------
+new TTFLoader().load(encodeURIComponent(DEFAULT_TTF), json => {
+  font = new FontLoader().parse(json);
+  refreshScene();
+});
+
+function makeLegend(str) {
+  const offset = FONT_WEIGHT_OFFSET * TEXT_SIZE;
+  const geo = new TextGeometry(str, {
+    font, size: TEXT_SIZE, height: TEXT_DEPTH, curveSegments: 6,
+    bevelEnabled: true, bevelThickness: 0, bevelSize: 0, bevelOffset: offset, bevelSegments: 1
+  });
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox;
+  const w = bb.max.x - bb.min.x, h = bb.max.y - bb.min.y;
+  const maxW = CAP_SIZE - 4;
+  const s = Math.min(1, maxW / w, maxW / h);
+  geo.translate(-(bb.min.x + w / 2), -(bb.min.y + h / 2), 0);
+  geo.scale(s, s, 1);
+  geo.translate(0, 0, TOP_Z - 0.05);
+  return geo;
+}
+
+async function showText() {
+  if (mode !== 'text') return;
+  updateIconControls();
+  if (!font) { loadingEl.textContent = 'Đang tải font…'; return; }
+  const items = getTextModeItems();
+  capCountEl.textContent = `${items.length} keycap sẽ được tạo`;
+  updateSlotHint();
+
+  loadingEl.textContent = 'Đang tải…';
+  const blank = await getParts(BLANK_FILE);
+  const iconFiles = [...new Set(items.filter(it => it.type === 'icon').map(it => it.file))];
+  await Promise.all(iconFiles.map(f => getParts(f)));
+  if (mode !== 'text') return;
+
+  clearDisplay();
+  const maxCols = window.innerWidth <= 768 ? 5 : 10;
+  const pitch = CAP_SIZE + GAP, cols = Math.min(items.length, maxCols);
+  items.forEach((it, i) => {
+    const x = (i % cols - (cols - 1) / 2) * pitch;
+    const y = -Math.floor(i / cols) * pitch;
+    if (it.type === 'icon') {
+      const parts = cache[it.file];
+      addKey(parts.cap, parts.legend, x, y, 0, it.label, false);
+    } else {
+      addKey(blank.cap, it.label ? makeLegend(it.label) : null, x, y, 0, it.label, true);
+    }
+  });
+  finishBuild(cols * pitch, 3);
+}
+
+// ---------- Base mode ----------
+async function showBase() {
+  if (mode !== 'base') return;
+  const slots = getActiveSlots();
+  updateSlotHint();
+  loadingEl.textContent = 'Đang tải…';
+  const baseGeo = await getBaseGeo(slots);
+  if (mode !== 'base') return;
+  clearDisplay();
+  addBase(baseGeo);
+  finishBuild(22 + (slots - 1) * BASE_PITCH + 6, 8);
+}
+
+// ---------- Preview mode (Keycaps mounted on top of Base) ----------
+async function showPreview() {
+  if (mode !== 'preview') return;
+  const slots = getActiveSlots();
+  updateSlotHint();
+  loadingEl.textContent = 'Đang tải…';
+
+  if (!font) { loadingEl.textContent = 'Đang tải font…'; return; }
+  const items = getTextModeItems();
+  const iconFiles = [...new Set(items.filter(it => it.type === 'icon').map(it => it.file))];
+  const [baseGeo, blank] = await Promise.all([
+    getBaseGeo(slots),
+    getParts(BLANK_FILE),
+    ...iconFiles.map(f => getParts(f))
+  ]);
+  if (mode !== 'preview') return;
+  clearDisplay();
+  addBase(baseGeo);
+  for (let i = 0; i < slots; i++) {
+    const it = items[i] || { type: 'text', label: '' };
+    const x = (i - (slots - 1) / 2) * BASE_PITCH;
+    if (it.type === 'icon') {
+      const parts = cache[it.file];
+      addKey(parts.cap, parts.legend, x, 0, PREVIEW_CAP_Z, it.label, false);
+    } else {
+      addKey(blank.cap, it.label ? makeLegend(it.label) : null, x, 0, PREVIEW_CAP_Z, it.label, true);
+    }
+  }
+  finishBuild(22 + (slots - 1) * BASE_PITCH + 6, 10);
+}
+
+function refreshScene() {
+  updateIconControls();
+  if (mode === 'text') showText();
+  else if (mode === 'base') showBase();
+  else if (mode === 'preview') showPreview();
+}
+
+textInput.oninput = refreshScene;
+perCapInput.oninput = refreshScene;
+baseSlotsSelect.onchange = () => { updateSlotHint(); refreshScene(); };
+
 // ---------- Mode tabs ----------
-let mode = 'lib';
-const tabLib = document.getElementById('tabLib'), tabText = document.getElementById('tabText');
+const tabText = document.getElementById('tabText');
+const tabBase = document.getElementById('tabBase');
+const tabPreview = document.getElementById('tabPreview');
+
 function setMode(m) {
   mode = m;
   selected = -1;
-  tabLib.classList.toggle('active', m === 'lib');
   tabText.classList.toggle('active', m === 'text');
-  document.getElementById('libSection').classList.toggle('hidden', m !== 'lib');
+  tabBase.classList.toggle('active', m === 'base');
+  tabPreview.classList.toggle('active', m === 'preview');
+
   document.getElementById('textSection').classList.toggle('hidden', m !== 'text');
-  m === 'lib' ? showLibrary() : showText();
+  document.getElementById('baseSection').classList.toggle('hidden', m !== 'base' && m !== 'preview');
+  document.getElementById('keyColorBox').classList.toggle('hidden', m === 'base');
+
+  refreshScene();
 }
-tabLib.onclick = () => setMode('lib');
 tabText.onclick = () => setMode('text');
+tabBase.onclick = () => setMode('base');
+tabPreview.onclick = () => setMode('preview');
 
-// ---------- Helpers for export ----------
-function download(data, filename, type) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([data], { type }));
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-function baseName() {
-  if (mode === 'text') return 'keycaps_' + (textInput.value.replace(/[^\w]/g, '') || 'blank');
-  return currentFile.replace(/\.stl$/i, '').replace(/[^\w-]/g, '_');
-}
-// World-space, vertex-merged geometry of a mesh (needed for clean, manifold 3MF output)
-function worldGeometry(mesh) {
-  mesh.updateWorldMatrix(true, false);
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', mesh.geometry.attributes.position.clone());
-  if (mesh.geometry.index) g.setIndex(mesh.geometry.index.clone());
-  g.applyMatrix4(mesh.matrixWorld);
-  return mergeVertices(g, 1e-4);
-}
-
-// ---------- STL export ----------
-const exporter = new STLExporter();
-function exportSTL(part, filename) {
-  const group = new THREE.Group();
-  display.traverse(m => {
-    if (m.isMesh && (!part || m.userData.part === part) && m.geometry.attributes.position.count) {
-      group.add(new THREE.Mesh(worldGeometry(m)));
-    }
-  });
-  if (!group.children.length) return;
-  download(exporter.parse(group, { binary: true }), filename, 'model/stl');
-}
-document.getElementById('exportAll').onclick = () => exportSTL(null, baseName() + '.stl');
-document.getElementById('exportParts').onclick = () => {
-  exportSTL('cap', baseName() + '_keycap.stl');
-  setTimeout(() => exportSTL('legend', baseName() + '_legend.stl'), 300);
-};
-
-// ---------- 3MF export (Bambu Studio compatible, with filament colors) ----------
+// ---------- PNG Image Export ----------
 function usedColors() {
   const list = [];
-  keys.forEach((k, i) => {
-    const c = colorsFor(i);
-    [c.cap, ...(k.group.children.length > 1 ? [c.legend] : [])].forEach(col => {
-      col = col.toUpperCase();
-      if (!list.includes(col)) list.push(col);
-    });
-  });
-  return list;
-}
-function updateColorInfo() {
-  const n = usedColors().length;
-  document.getElementById('colorInfo').textContent =
-    `${n} filament color${n > 1 ? 's' : ''} used` + (n > MAX_FILAMENTS ? ` — too many! Max ${MAX_FILAMENTS}.` : ' (auto-assigned to AMS slots)');
-}
-
-// Bambu Studio system preset names per printer (0.4 mm nozzle, Bambu PLA Basic, 0.20 mm Standard)
-const PRINTERS = {
-  X1C: { model: 'Bambu Lab X1 Carbon', printer: 'Bambu Lab X1 Carbon 0.4 nozzle', process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
-  X1:  { model: 'Bambu Lab X1',        printer: 'Bambu Lab X1 0.4 nozzle',        process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
-  X1E: { model: 'Bambu Lab X1E',       printer: 'Bambu Lab X1E 0.4 nozzle',       process: '0.20mm Standard @BBL X1E', filament: 'Bambu PLA Basic @BBL X1E' },
-  P1S: { model: 'Bambu Lab P1S',       printer: 'Bambu Lab P1S 0.4 nozzle',       process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
-  P1P: { model: 'Bambu Lab P1P',       printer: 'Bambu Lab P1P 0.4 nozzle',       process: '0.20mm Standard @BBL P1P', filament: 'Bambu PLA Basic @BBL P1P' },
-  A1:  { model: 'Bambu Lab A1',        printer: 'Bambu Lab A1 0.4 nozzle',        process: '0.20mm Standard @BBL A1',  filament: 'Bambu PLA Basic @BBL A1' },
-  A1M: { model: 'Bambu Lab A1 mini',   printer: 'Bambu Lab A1 mini 0.4 nozzle',   process: '0.20mm Standard @BBL A1M', filament: 'Bambu PLA Basic @BBL A1M' },
-  none: null
-};
-const presetSelect = document.getElementById('printerPreset');
-const presetHint = document.getElementById('presetHint');
-function updatePresetHint() {
-  presetHint.textContent = presetSelect.value === 'none'
-    ? 'Only filament colors are saved. Bambu keeps your current printer & filament presets (colors may be replaced by your defaults).'
-    : 'Uses official Bambu presets (PLA Basic, 0.20mm Standard, 0.4 nozzle) — no "customized preset" warning.';
-  localStorage.setItem('printerPreset', presetSelect.value);
-}
-presetSelect.value = localStorage.getItem('printerPreset') || 'X1C';
-presetSelect.onchange = updatePresetHint;
-updatePresetHint();
-
-// Bambu/Orca per-triangle "paint_color" code for filament n (1-based)
-function paintCode(n) {
-  if (n < 3) return (n << 2).toString(16).toUpperCase();
-  return 'C' + (n - 3).toString(16).toUpperCase();
-}
-// The serialized string is nibble-reversed: filament 3 -> "0C", 4 -> "1C"
-function paintAttr(n) { return [...paintCode(n)].reverse().join(''); }
-
-function export3MF() {
-  const colors = usedColors();
-  if (colors.length > MAX_FILAMENTS) { alert(`Too many colors (${colors.length}). Max is ${MAX_FILAMENTS}.`); return; }
-  const fil = col => colors.indexOf(col.toUpperCase()) + 1;
-
-  // Place the build in the middle of the plate (A1 mini is 180 mm, others 256 mm)
-  const half = presetSelect.value === 'A1M' ? 90 : 128;
-  const OFFSET = new THREE.Vector3(half, half, 0);
-  const objectsXml = [], buildXml = [], settingsXml = [];
-  keys.forEach((k, i) => {
-    const c = colorsFor(i);
-    const verts = [], tris = [];
-    k.group.children.forEach(mesh => {
-      if (!mesh.geometry.attributes.position.count) return;
-      const g = worldGeometry(mesh);
-      const p = g.attributes.position.array, idx = g.index.array;
-      const base = verts.length / 3;
-      for (let j = 0; j < p.length; j += 3) verts.push(p[j] + OFFSET.x, p[j+1] + OFFSET.y, p[j+2] + OFFSET.z);
-      const n = fil(mesh.userData.part === 'cap' ? c.cap : c.legend);
-      for (let j = 0; j < idx.length; j += 3) tris.push([idx[j] + base, idx[j+1] + base, idx[j+2] + base, n]);
-    });
-    const id = i + 1;
-    const capFil = fil(c.cap);
-    let v = '', t = '';
-    for (let j = 0; j < verts.length; j += 3) v += `<vertex x="${verts[j].toFixed(4)}" y="${verts[j+1].toFixed(4)}" z="${verts[j+2].toFixed(4)}"/>\n`;
-    for (const [a, b, cc, n] of tris) {
-      // Triangles in the object's own filament need no paint; others are painted with their filament
-      t += `<triangle v1="${a}" v2="${b}" v3="${cc}" pid="1" p1="${n - 1}"${n !== capFil ? ` paint_color="${paintAttr(n)}"` : ''}/>\n`;
-    }
-    const name = k.label ? `Key ${id} - ${k.label}` : `Keycap ${id}`;
-    objectsXml.push(`<object id="${id + 1}" type="model" name="${name}" pid="1" pindex="${capFil - 1}"><mesh><vertices>\n${v}</vertices><triangles>\n${t}</triangles></mesh></object>`);
-    buildXml.push(`<item objectid="${id + 1}" printable="1"/>`);
-    settingsXml.push(`  <object id="${id + 1}">
-    <metadata key="name" value="${name}"/>
-    <metadata key="extruder" value="${capFil}"/>
-  </object>`);
-  });
-
-  const model = `<?xml version="1.0" encoding="UTF-8"?>
-<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">
-<metadata name="Application">BambuStudio-01.09.00.00</metadata>
-<metadata name="Title">${baseName()}</metadata>
-<resources>
-<basematerials id="1">
-${colors.map((col, i) => `<base name="Filament ${i + 1}" displaycolor="${col}FF"/>`).join('\n')}
-</basematerials>
-${objectsXml.join('\n')}
-</resources>
-<build>
-${buildXml.join('\n')}
-</build>
-</model>`;
-
-  const modelSettings = `<?xml version="1.0" encoding="UTF-8"?>
-<config>
-${settingsXml.join('\n')}
-</config>`;
-
-  const preset = PRINTERS[presetSelect.value];
-  const settings = { filament_colour: colors, version: '01.09.00.00' };
-  if (preset) {
-    // Official Bambu system presets matching the chosen printer, so nothing is "customized"
-    Object.assign(settings, {
-      printer_model: preset.model,
-      printer_settings_id: preset.printer,
-      print_settings_id: preset.process,
-      filament_settings_id: colors.map(() => preset.filament),
-      filament_type: colors.map(() => 'PLA'),
-      filament_ids: colors.map(() => 'GFA00'),
-      filament_vendor: colors.map(() => 'Bambu Lab'),
-      from: 'project',
-      name: 'project_settings'
+  const add = col => {
+    col = col.toUpperCase();
+    if (!list.includes(col)) list.push(col);
+  };
+  if (mode === 'base' || mode === 'preview') add(baseColor.value);
+  if (mode !== 'base') {
+    keys.forEach((k, i) => {
+      const c = colorsFor(i);
+      add(c.cap);
+      if (k.group.children.length > 1) add(c.legend);
     });
   }
-  const projectSettings = JSON.stringify(settings, null, 2);
-
-  const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
-<Default Extension="config" ContentType="text/xml"/>
-</Types>`;
-  const rels = `<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
-</Relationships>`;
-
-  const zip = zipSync({
-    '[Content_Types].xml': strToU8(contentTypes),
-    '_rels/.rels': strToU8(rels),
-    '3D/3dmodel.model': strToU8(model),
-    'Metadata/model_settings.config': strToU8(modelSettings),
-    'Metadata/project_settings.config': strToU8(projectSettings)
-  }, { level: 6 });
-  download(zip, baseName() + '.3mf', 'model/3mf');
+  return list;
 }
-document.getElementById('export3mf').onclick = export3MF;
 
-// ---------- Library list ----------
+function exportPNG() {
+  keys.forEach(k => { k.capMat.emissive.setHex(0); k.legMat.emissive.setHex(0); });
+  renderer.render(scene, camera);
+
+  const src = renderer.domElement;
+  const footerH = Math.max(70, Math.round(src.height * 0.1));
+  const out = document.createElement('canvas');
+  out.width = src.width;
+  out.height = src.height + footerH;
+  const ctx = out.getContext('2d');
+
+  ctx.drawImage(src, 0, 0);
+  ctx.fillStyle = '#262930';
+  ctx.fillRect(0, src.height, out.width, footerH);
+
+  const pad = Math.round(footerH * 0.28);
+  const fontSize = Math.max(13, Math.round(footerH * 0.25));
+  ctx.fillStyle = '#eee';
+  ctx.font = `600 ${fontSize}px system-ui, sans-serif`;
+  const slots = getActiveSlots();
+  const summary = mode === 'base'
+    ? `18.studio · Đế (${slots} khe) · Màu đế: ${baseColor.value.toUpperCase()}`
+    : `18.studio · Đế (${slots} khe) · Đế ${baseColor.value.toUpperCase()} · ${keys.length} phím`;
+  ctx.fillText(summary, pad, src.height + Math.round(footerH * 0.62));
+
+  const cols = usedColors();
+  const r = Math.max(9, Math.round(footerH * 0.22));
+  let cx = out.width - pad - r;
+  const cy = src.height + Math.round(footerH / 2);
+  for (let i = cols.length - 1; i >= 0; i--) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = cols[i];
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#555';
+    ctx.stroke();
+    cx -= r * 2.5;
+  }
+
+  refreshMaterials();
+  out.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '18studio_keycap_design.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }, 'image/png');
+}
+document.getElementById('exportPng').onclick = exportPNG;
+
+// ---------- Icon dropdown ----------
 const models = await (await fetch('models.json')).json();
-const selectEl = document.getElementById('model'), search = document.getElementById('search');
-function fillList() {
-  const q = search.value.toLowerCase();
-  selectEl.innerHTML = '';
-  models.filter(m => m.name.toLowerCase().includes(q)).forEach(m => selectEl.add(new Option(m.name, m.file)));
-  if (currentFile) selectEl.value = currentFile;
+const iconModels = models.filter(m => m.category === 'icon');
+function fillIcons() {
+  const q = iconSearch.value.toLowerCase();
+  const prev = iconSelect.value;
+  iconSelect.innerHTML = '';
+  iconModels.filter(m => m.name.toLowerCase().includes(q)).forEach(m => iconSelect.add(new Option(m.name, m.file)));
+  if ([...iconSelect.options].some(o => o.value === prev)) iconSelect.value = prev;
 }
-search.oninput = fillList;
-selectEl.onchange = () => { currentFile = selectEl.value; showLibrary(); };
-fillList();
-currentFile = (models.find(m => m.name === 'A') || models[0]).file;
-selectEl.value = currentFile;
-showLibrary();
+iconSearch.oninput = fillIcons;
+fillIcons();
+updateSlotHint();
+updateIconControls();
 
 function resize() {
   const w = view.clientWidth || 1, h = view.clientHeight || 1;

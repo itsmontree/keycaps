@@ -1,542 +1,677 @@
 [
- {
-  "name": "heart",
-  "file": "obj_1_keycap - heart.stl"
- },
- {
-  "name": "star",
-  "file": "obj_2_keycap - star.stl"
- },
- {
-  "name": "moon",
-  "file": "obj_3_keycap - moon.stl"
- },
- {
-  "name": "cloud",
-  "file": "obj_4_keycap - cloud.stl"
- },
- {
-  "name": "ribbon",
-  "file": "obj_5_keycap - ribbon.stl"
- },
- {
-  "name": "lightning",
-  "file": "obj_6_keycap - lightning.stl"
- },
- {
-  "name": "duck",
-  "file": "obj_7_keycap - duck.stl"
- },
- {
-  "name": "fire",
-  "file": "obj_8_keycap - fire.stl"
- },
- {
-  "name": "cat",
-  "file": "obj_9_keycap - cat.stl"
- },
- {
-  "name": "clover",
-  "file": "obj_10_keycap - clover.stl"
- },
- {
-  "name": "airplane",
-  "file": "obj_11_keycap - airplane.stl"
- },
- {
-  "name": "music",
-  "file": "obj_12_keycap - music.stl"
- },
- {
-  "name": "coffee",
-  "file": "obj_13_keycap - coffee.stl"
- },
- {
-  "name": "flower",
-  "file": "obj_14_keycap - flower.stl"
- },
- {
-  "name": "paw",
-  "file": "obj_15_keycap - paw.stl"
- },
- {
-  "name": "Blank",
-  "file": "obj_16_keycap.stl"
- },
- {
-  "name": "1",
-  "file": "obj_17_keycap-char-1.stl"
- },
- {
-  "name": "2",
-  "file": "obj_18_keycap-char-2.stl"
- },
- {
-  "name": "3",
-  "file": "obj_19_keycap-char-3.stl"
- },
- {
-  "name": "4",
-  "file": "obj_20_keycap-char-4.stl"
- },
- {
-  "name": "5",
-  "file": "obj_21_keycap-char-5.stl"
- },
- {
-  "name": "6",
-  "file": "obj_22_keycap-char-6.stl"
- },
- {
-  "name": "7",
-  "file": "obj_23_keycap-char-7.stl"
- },
- {
-  "name": "8",
-  "file": "obj_24_keycap-char-8.stl"
- },
- {
-  "name": "9",
-  "file": "obj_25_keycap-char-9.stl"
- },
- {
-  "name": "0",
-  "file": "obj_26_keycap-char-0.stl"
- },
- {
-  "name": "A",
-  "file": "obj_27_keycap-char-A.stl"
- },
- {
-  "name": "B",
-  "file": "obj_28_keycap-char-B.stl"
- },
- {
-  "name": "C",
-  "file": "obj_29_keycap-char-C.stl"
- },
- {
-  "name": "D",
-  "file": "obj_30_keycap-char-D.stl"
- },
- {
-  "name": "E",
-  "file": "obj_31_keycap-char-E.stl"
- },
- {
-  "name": "F",
-  "file": "obj_32_keycap-char-F.stl"
- },
- {
-  "name": "G",
-  "file": "obj_33_keycap-char-G.stl"
- },
- {
-  "name": "H",
-  "file": "obj_34_keycap-char-H.stl"
- },
- {
-  "name": "I",
-  "file": "obj_35_keycap-char-I.stl"
- },
- {
-  "name": "J",
-  "file": "obj_36_keycap-char-J.stl"
- },
- {
-  "name": "K",
-  "file": "obj_37_keycap-char-K.stl"
- },
- {
-  "name": "L",
-  "file": "obj_38_keycap-char-L.stl"
- },
- {
-  "name": "M",
-  "file": "obj_39_keycap-char-M.stl"
- },
- {
-  "name": "N",
-  "file": "obj_40_keycap-char-N.stl"
- },
- {
-  "name": "O",
-  "file": "obj_41_keycap-char-O.stl"
- },
- {
-  "name": "P",
-  "file": "obj_42_keycap-char-P.stl"
- },
- {
-  "name": "Q",
-  "file": "obj_43_keycap-char-Q.stl"
- },
- {
-  "name": "R",
-  "file": "obj_44_keycap-char-R.stl"
- },
- {
-  "name": "S",
-  "file": "obj_45_keycap-char-S.stl"
- },
- {
-  "name": "T",
-  "file": "obj_46_keycap-char-T.stl"
- },
- {
-  "name": "U",
-  "file": "obj_47_keycap-char-U.stl"
- },
- {
-  "name": "V",
-  "file": "obj_48_keycap-char-V.stl"
- },
- {
-  "name": "W",
-  "file": "obj_49_keycap-char-W.stl"
- },
- {
-  "name": "X",
-  "file": "obj_50_keycap-char-X.stl"
- },
- {
-  "name": "Y",
-  "file": "obj_51_keycap-char-Y.stl"
- },
- {
-  "name": "Z",
-  "file": "obj_52_keycap-char-Z.stl"
- },
- {
-  "name": "apple",
-  "file": "obj_53_chunky_keycap_apple.stl"
- },
- {
-  "name": "avocado",
-  "file": "obj_54_chunky_keycap_avocado.stl"
- },
- {
-  "name": "banana",
-  "file": "obj_55_chunky_keycap_banana.stl"
- },
- {
-  "name": "blueberry",
-  "file": "obj_56_chunky_keycap_blueberry.stl"
- },
- {
-  "name": "cherry",
-  "file": "obj_57_chunky_keycap_cherry.stl"
- },
- {
-  "name": "durian",
-  "file": "obj_58_chunky_keycap_durian.stl"
- },
- {
-  "name": "grapes",
-  "file": "obj_59_chunky_keycap_grapes.stl"
- },
- {
-  "name": "kiwi",
-  "file": "obj_60_chunky_keycap_kiwi.stl"
- },
- {
-  "name": "lemon",
-  "file": "obj_61_chunky_keycap_lemon.stl"
- },
- {
-  "name": "watermelon",
-  "file": "obj_62_chunky_keycap_watermelon.stl"
- },
- {
-  "name": "mango",
-  "file": "obj_63_chunky_keycap_mango.stl"
- },
- {
-  "name": "orange",
-  "file": "obj_64_chunky_keycap_orange.stl"
- },
- {
-  "name": "peach",
-  "file": "obj_65_chunky_keycap_peach.stl"
- },
- {
-  "name": "starfruit",
-  "file": "obj_66_chunky_keycap_starfruit.stl"
- },
- {
-  "name": "strawberry",
-  "file": "obj_67_chunky_keycap_strawberry.stl"
- },
- {
-  "name": "Volleyball",
-  "file": "obj_68_Chunky Keycaps - Volleyball.stl"
- },
- {
-  "name": "Rugby",
-  "file": "obj_69_Chunky Keycaps - Rugby.stl"
- },
- {
-  "name": "Ski",
-  "file": "obj_70_Chunky Keycaps - Ski.stl"
- },
- {
-  "name": "Bicycle",
-  "file": "obj_71_Chunky Keycaps - Bicycle.stl"
- },
- {
-  "name": "Golf",
-  "file": "obj_72_Chunky Keycaps - Golf.stl"
- },
- {
-  "name": "Pickleball",
-  "file": "obj_73_Chunky Keycaps - Pickleball.stl"
- },
- {
-  "name": "Bowling",
-  "file": "obj_74_Chunky Keycaps - Bowling.stl"
- },
- {
-  "name": "Soccer",
-  "file": "obj_75_Chunky Keycaps - Soccer.stl"
- },
- {
-  "name": "Baseball",
-  "file": "obj_76_Chunky Keycaps - Baseball.stl"
- },
- {
-  "name": "Chess",
-  "file": "obj_77_Chunky Keycaps - Chess.stl"
- },
- {
-  "name": "Badminton",
-  "file": "obj_78_Chunky Keycaps - Badminton.stl"
- },
- {
-  "name": "Skateboard",
-  "file": "obj_79_Chunky Keycaps - Skateboard.stl"
- },
- {
-  "name": "Surf",
-  "file": "obj_80_Chunky Keycaps - Surf.stl"
- },
- {
-  "name": "Tennis",
-  "file": "obj_81_Chunky Keycaps - Tennis.stl"
- },
- {
-  "name": "Billiard",
-  "file": "obj_82_Chunky Keycaps - Billiard.stl"
- },
- {
-  "name": "Basketball",
-  "file": "obj_83_Chunky Keycaps - Basketball.stl"
- },
- {
-  "name": "bat",
-  "file": "obj_84_keycap - bat.stl"
- },
- {
-  "name": "casket",
-  "file": "obj_85_keycap - casket.stl"
- },
- {
-  "name": "candle",
-  "file": "obj_86_keycap - candle.stl"
- },
- {
-  "name": "lollipop",
-  "file": "obj_87_keycap - lollipop.stl"
- },
- {
-  "name": "moon",
-  "file": "obj_88_keycap - moon.stl"
- },
- {
-  "name": "cat",
-  "file": "obj_89_keycap - cat.stl"
- },
- {
-  "name": "spider",
-  "file": "obj_90_keycap - spider.stl"
- },
- {
-  "name": "castle",
-  "file": "obj_91_keycap - castle.stl"
- },
- {
-  "name": "candy",
-  "file": "obj_92_keycap - candy.stl"
- },
- {
-  "name": "witch hat",
-  "file": "obj_93_keycap - witch hat.stl"
- },
- {
-  "name": "cauldron",
-  "file": "obj_94_keycap - cauldron.stl"
- },
- {
-  "name": "skull",
-  "file": "obj_95_keycap - skull.stl"
- },
- {
-  "name": "tomb",
-  "file": "obj_96_keycap - tomb.stl"
- },
- {
-  "name": "pumpkin",
-  "file": "obj_97_keycap - pumpkin.stl"
- },
- {
-  "name": "ghost",
-  "file": "obj_98_keycap - ghost.stl"
- },
- {
-  "name": "a ring above",
-  "file": "obj_99_a_ring_above.stl"
- },
- {
-  "name": "ae ligature",
-  "file": "obj_100_ae_ligature.stl"
- },
- {
-  "name": "o stroke",
-  "file": "obj_101_o_stroke.stl"
- },
- {
-  "name": "o ligature",
-  "file": "obj_102_o_ligature.stl"
- },
- {
-  "name": "c cedilla",
-  "file": "obj_103_c_cedilla.stl"
- },
- {
-  "name": "a diaeresis",
-  "file": "obj_104_a_diaeresis.stl"
- },
- {
-  "name": "n tilde",
-  "file": "obj_105_n_tilde.stl"
- },
- {
-  "name": "u ring above",
-  "file": "obj_106_u_ring_above.stl"
- },
- {
-  "name": "y diaeresis",
-  "file": "obj_107_y_diaeresis.stl"
- },
- {
-  "name": "a acute accent",
-  "file": "obj_108_a_acute_accent.stl"
- },
- {
-  "name": "a grave accent",
-  "file": "obj_109_a_grave_accent.stl"
- },
- {
-  "name": "a circumflex",
-  "file": "obj_110_a_circumflex.stl"
- },
- {
-  "name": "a tilde",
-  "file": "obj_111_a_tilde.stl"
- },
- {
-  "name": "e acute accent",
-  "file": "obj_112_e_acute_accent.stl"
- },
- {
-  "name": "e circumflex",
-  "file": "obj_113_e_circumflex.stl"
- },
- {
-  "name": "e diaeresis",
-  "file": "obj_114_e_diaeresis.stl"
- },
- {
-  "name": "e grave accent",
-  "file": "obj_115_e_grave_accent.stl"
- },
- {
-  "name": "i acute accent",
-  "file": "obj_116_i_acute_accent.stl"
- },
- {
-  "name": "i circumflex",
-  "file": "obj_117_i_circumflex.stl"
- },
- {
-  "name": "i diaeresis",
-  "file": "obj_118_i_diaeresis.stl"
- },
- {
-  "name": "i grave accent",
-  "file": "obj_119_i_grave_accent.stl"
- },
- {
-  "name": "o acute accent",
-  "file": "obj_120_o_acute_accent.stl"
- },
- {
-  "name": "o circumflex",
-  "file": "obj_121_o_circumflex.stl"
- },
- {
-  "name": "o diaeresis",
-  "file": "obj_122_o_diaeresis.stl"
- },
- {
-  "name": "o grave accent",
-  "file": "obj_123_o_grave_accent.stl"
- },
- {
-  "name": "o tilde",
-  "file": "obj_124_o_tilde.stl"
- },
- {
-  "name": "u acute accent",
-  "file": "obj_125_u_acute_accent.stl"
- },
- {
-  "name": "u circumflex",
-  "file": "obj_126_u_circumflex.stl"
- },
- {
-  "name": "u diaeresis",
-  "file": "obj_127_u_diaeresis.stl"
- },
- {
-  "name": "u grave accent",
-  "file": "obj_128_u_grave_accent.stl"
- },
- {
-  "name": "question mark",
-  "file": "obj_129_keycap-char-question_mark.stl"
- },
- {
-  "name": "exclamation mark",
-  "file": "obj_130_keycap-char-exclamation_mark.stl"
- },
- {
-  "name": "ampersand",
-  "file": "obj_131_keycap-char-ampersand.stl"
- },
- {
-  "name": "at",
-  "file": "obj_132_keycap-char-at.stl"
- },
- {
-  "name": "dollar",
-  "file": "obj_133_keycap-char-dollar.stl"
- },
- {
-  "name": "colon",
-  "file": "obj_134_keycap-char-colon.stl"
- },
- {
-  "name": "semicolon",
-  "file": "obj_135_keycap-char-semicolon.stl"
- }
+  {
+    "name": "Trái tim",
+    "file": "obj_1_keycap - heart.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Ngôi sao",
+    "file": "obj_2_keycap - star.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Mặt trăng",
+    "file": "obj_3_keycap - moon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Đám mây",
+    "file": "obj_4_keycap - cloud.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Chiếc nơ",
+    "file": "obj_5_keycap - ribbon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Tia sét",
+    "file": "obj_6_keycap - lightning.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Con vịt",
+    "file": "obj_7_keycap - duck.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Ngọn lửa",
+    "file": "obj_8_keycap - fire.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Con mèo",
+    "file": "obj_9_keycap - cat.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Cỏ 4 lá",
+    "file": "obj_10_keycap - clover.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Máy bay",
+    "file": "obj_11_keycap - airplane.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Nốt nhạc",
+    "file": "obj_12_keycap - music.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Ly cà phê",
+    "file": "obj_13_keycap - coffee.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bông hoa",
+    "file": "obj_14_keycap - flower.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Chân mèo",
+    "file": "obj_15_keycap - paw.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Phím trơn (Không hình)",
+    "file": "obj_16_keycap.stl",
+    "category": "blank"
+  },
+  {
+    "name": "Số 1",
+    "file": "obj_17_keycap-char-1.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 2",
+    "file": "obj_18_keycap-char-2.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 3",
+    "file": "obj_19_keycap-char-3.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 4",
+    "file": "obj_20_keycap-char-4.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 5",
+    "file": "obj_21_keycap-char-5.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 6",
+    "file": "obj_22_keycap-char-6.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 7",
+    "file": "obj_23_keycap-char-7.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 8",
+    "file": "obj_24_keycap-char-8.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 9",
+    "file": "obj_25_keycap-char-9.stl",
+    "category": "char"
+  },
+  {
+    "name": "Số 0",
+    "file": "obj_26_keycap-char-0.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ A",
+    "file": "obj_27_keycap-char-A.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ B",
+    "file": "obj_28_keycap-char-B.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ C",
+    "file": "obj_29_keycap-char-C.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ D",
+    "file": "obj_30_keycap-char-D.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ E",
+    "file": "obj_31_keycap-char-E.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ F",
+    "file": "obj_32_keycap-char-F.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ G",
+    "file": "obj_33_keycap-char-G.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ H",
+    "file": "obj_34_keycap-char-H.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ I",
+    "file": "obj_35_keycap-char-I.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ J",
+    "file": "obj_36_keycap-char-J.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ K",
+    "file": "obj_37_keycap-char-K.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ L",
+    "file": "obj_38_keycap-char-L.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ M",
+    "file": "obj_39_keycap-char-M.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ N",
+    "file": "obj_40_keycap-char-N.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ O",
+    "file": "obj_41_keycap-char-O.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ P",
+    "file": "obj_42_keycap-char-P.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Q",
+    "file": "obj_43_keycap-char-Q.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ R",
+    "file": "obj_44_keycap-char-R.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ S",
+    "file": "obj_45_keycap-char-S.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ T",
+    "file": "obj_46_keycap-char-T.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ U",
+    "file": "obj_47_keycap-char-U.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ V",
+    "file": "obj_48_keycap-char-V.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ W",
+    "file": "obj_49_keycap-char-W.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ X",
+    "file": "obj_50_keycap-char-X.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Y",
+    "file": "obj_51_keycap-char-Y.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Z",
+    "file": "obj_52_keycap-char-Z.stl",
+    "category": "char"
+  },
+  {
+    "name": "Quả táo",
+    "file": "obj_53_chunky_keycap_apple.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả bơ",
+    "file": "obj_54_chunky_keycap_avocado.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả chuối",
+    "file": "obj_55_chunky_keycap_banana.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Việt quất",
+    "file": "obj_56_chunky_keycap_blueberry.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả cherry",
+    "file": "obj_57_chunky_keycap_cherry.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Sầu riêng",
+    "file": "obj_58_chunky_keycap_durian.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Chùm nho",
+    "file": "obj_59_chunky_keycap_grapes.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả kiwi",
+    "file": "obj_60_chunky_keycap_kiwi.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả chanh",
+    "file": "obj_61_chunky_keycap_lemon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dưa hấu",
+    "file": "obj_62_chunky_keycap_watermelon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả xoài",
+    "file": "obj_63_chunky_keycap_mango.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả cam",
+    "file": "obj_64_chunky_keycap_orange.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả đào",
+    "file": "obj_65_chunky_keycap_peach.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quả khế",
+    "file": "obj_66_chunky_keycap_starfruit.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dâu tây",
+    "file": "obj_67_chunky_keycap_strawberry.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bóng chuyền",
+    "file": "obj_68_Chunky Keycaps - Volleyball.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bóng bầu dục",
+    "file": "obj_69_Chunky Keycaps - Rugby.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Trượt tuyết",
+    "file": "obj_70_Chunky Keycaps - Ski.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Xe đạp",
+    "file": "obj_71_Chunky Keycaps - Bicycle.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Đánh golf",
+    "file": "obj_72_Chunky Keycaps - Golf.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Pickleball",
+    "file": "obj_73_Chunky Keycaps - Pickleball.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bowling",
+    "file": "obj_74_Chunky Keycaps - Bowling.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bóng đá",
+    "file": "obj_75_Chunky Keycaps - Soccer.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bóng chày",
+    "file": "obj_76_Chunky Keycaps - Baseball.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Cờ vua",
+    "file": "obj_77_Chunky Keycaps - Chess.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Cầu lông",
+    "file": "obj_78_Chunky Keycaps - Badminton.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Ván trượt",
+    "file": "obj_79_Chunky Keycaps - Skateboard.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Lướt sóng",
+    "file": "obj_80_Chunky Keycaps - Surf.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quần vợt (Tennis)",
+    "file": "obj_81_Chunky Keycaps - Tennis.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bi-a (Bida)",
+    "file": "obj_82_Chunky Keycaps - Billiard.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bóng rổ",
+    "file": "obj_83_Chunky Keycaps - Basketball.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Con dơi (Halloween)",
+    "file": "obj_84_keycap - bat.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Quan tài (Halloween)",
+    "file": "obj_85_keycap - casket.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Ngọn nến (Halloween)",
+    "file": "obj_86_keycap - candle.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Kẹo mút (Halloween)",
+    "file": "obj_87_keycap - lollipop.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Trăng khuyết (Halloween)",
+    "file": "obj_88_keycap - moon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Mèo đen (Halloween)",
+    "file": "obj_89_keycap - cat.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Con nhện (Halloween)",
+    "file": "obj_90_keycap - spider.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Lâu đài (Halloween)",
+    "file": "obj_91_keycap - castle.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Viên kẹo (Halloween)",
+    "file": "obj_92_keycap - candy.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Mũ phù thủy (Halloween)",
+    "file": "obj_93_keycap - witch hat.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Vạc thuốc (Halloween)",
+    "file": "obj_94_keycap - cauldron.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Đầu lâu (Halloween)",
+    "file": "obj_95_keycap - skull.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bia mộ (Halloween)",
+    "file": "obj_96_keycap - tomb.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Bí ngô (Halloween)",
+    "file": "obj_97_keycap - pumpkin.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Con ma (Halloween)",
+    "file": "obj_98_keycap - ghost.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Chữ Å",
+    "file": "obj_99_a_ring_above.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Æ",
+    "file": "obj_100_ae_ligature.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ø",
+    "file": "obj_101_o_stroke.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Œ",
+    "file": "obj_102_o_ligature.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ç",
+    "file": "obj_103_c_cedilla.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ä",
+    "file": "obj_104_a_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ñ",
+    "file": "obj_105_n_tilde.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ů",
+    "file": "obj_106_u_ring_above.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ÿ",
+    "file": "obj_107_y_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Á",
+    "file": "obj_108_a_acute_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ À",
+    "file": "obj_109_a_grave_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Â",
+    "file": "obj_110_a_circumflex.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ã",
+    "file": "obj_111_a_tilde.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ É",
+    "file": "obj_112_e_acute_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ê",
+    "file": "obj_113_e_circumflex.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ë",
+    "file": "obj_114_e_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ È",
+    "file": "obj_115_e_grave_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Í",
+    "file": "obj_116_i_acute_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Î",
+    "file": "obj_117_i_circumflex.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ï",
+    "file": "obj_118_i_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ì",
+    "file": "obj_119_i_grave_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ó",
+    "file": "obj_120_o_acute_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ô",
+    "file": "obj_121_o_circumflex.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ö",
+    "file": "obj_122_o_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ò",
+    "file": "obj_123_o_grave_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Õ",
+    "file": "obj_124_o_tilde.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ú",
+    "file": "obj_125_u_acute_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Û",
+    "file": "obj_126_u_circumflex.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ü",
+    "file": "obj_127_u_diaeresis.stl",
+    "category": "char"
+  },
+  {
+    "name": "Chữ Ù",
+    "file": "obj_128_u_grave_accent.stl",
+    "category": "char"
+  },
+  {
+    "name": "Dấu chấm hỏi (?)",
+    "file": "obj_129_keycap-char-question_mark.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu chấm than (!)",
+    "file": "obj_130_keycap-char-exclamation_mark.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu và (&)",
+    "file": "obj_131_keycap-char-ampersand.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu @",
+    "file": "obj_132_keycap-char-at.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu đô la ($)",
+    "file": "obj_133_keycap-char-dollar.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu hai chấm (:)",
+    "file": "obj_134_keycap-char-colon.stl",
+    "category": "icon"
+  },
+  {
+    "name": "Dấu chấm phẩy (;)",
+    "file": "obj_135_keycap-char-semicolon.stl",
+    "category": "icon"
+  }
 ]
