@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Custom Keycap Studio</title>
+<title>18.studio keycap maker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; background: #1d1f24; color: #eee; }
-  #panel { width: 330px; padding: 20px; background: #262930; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; height: 100dvh; background: #1d1f24; color: #eee; overflow: hidden; }
+  #panel { width: 330px; padding: 20px; background: #262930; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   h1 { font-size: 20px; margin: 0; }
   label { font-size: 13px; color: #aaa; display: block; margin-bottom: 6px; }
   select, input[type=search], input[type=text], input[type=number] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; }
@@ -23,10 +23,22 @@
   .row { display: flex; gap: 8px; }
   .box { background: #1d1f24; border: 1px solid #3a3d45; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
   #editing { font-weight: 600; color: #4aa3df; }
-  #view { flex: 1; position: relative; }
-  #loading { position: absolute; top: 12px; left: 12px; font-size: 13px; color: #aaa; }
-  #tip { position: absolute; bottom: 12px; left: 12px; font-size: 12px; color: #777; }
+  #view { flex: 1; position: relative; min-width: 0; min-height: 0; }
+  #view canvas { display: block; touch-action: none; }
+  #loading { position: absolute; top: 12px; left: 12px; font-size: 13px; color: #aaa; pointer-events: none; }
+  #tip { position: absolute; bottom: 12px; left: 12px; right: 12px; font-size: 12px; color: #777; pointer-events: none; }
   .hidden { display: none !important; }
+  @media (max-width: 768px) {
+    body { flex-direction: column-reverse; }
+    #view { flex: 0 0 42%; min-height: 210px; width: 100%; }
+    #panel { flex: 1; width: 100%; padding: 14px 16px 24px; gap: 14px; border-top: 1px solid #3a3d45; }
+    h1 { font-size: 18px; }
+    select, input[type=search], input[type=text], input[type=number] { font-size: 16px; }
+    #model { max-height: 150px; }
+    .swatches button { width: 30px; height: 30px; }
+    .tabs button, .btn { padding: 10px; font-size: 14px; }
+    #tip { font-size: 11px; bottom: 8px; }
+  }
 </style>
 <script type="importmap">
 { "imports": {
@@ -38,7 +50,7 @@
 </head>
 <body>
 <div id="panel">
-  <h1>âŒ¨ï¸ Keycap Studio</h1>
+  <h1>18.studio keycap maker</h1>
   <div class="tabs">
     <button id="tabLib" class="active">Design library</button>
     <button id="tabText">Custom text</button>
@@ -74,7 +86,7 @@
     <div>
       <label>Font weight: <span id="weightName">Bold</span></label>
       <input type="range" id="fontWeight" min="0" max="6" step="1" value="4" style="width:100%">
-      <div class="hint">Thickens or thins the letter outlines â€” works with any font.</div>
+      <div class="hint">Thickens or thins the letter outlines — works with any font.</div>
     </div>
   </div>
 
@@ -116,7 +128,7 @@
     <button class="btn" id="exportParts" style="width:100%;margin-top:6px">Download STL keycap + legend separately</button>
   </div>
 </div>
-<div id="view"><div id="loading"></div><div id="tip">Drag to rotate Â· Scroll to zoom Â· Click a key to select</div></div>
+<div id="view"><div id="loading"></div><div id="tip">Drag to rotate · Pinch/scroll to zoom · Tap a key to select</div></div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -154,8 +166,12 @@ scene.add(dir);
 const display = new THREE.Group();
 scene.add(display);
 
+let currentWidth = CAP_SIZE;
 function frameCamera(width) {
-  const d = Math.max(30, width * 1.1);
+  currentWidth = width;
+  const aspect = Math.max(0.4, (view.clientWidth || 1) / (view.clientHeight || 1));
+  const effWidth = aspect < 1 ? width / aspect : width;
+  const d = Math.max(30, effWidth * 1.1);
   camera.position.set(0, -d, d);
   controls.target.set(0, 0, 3);
   controls.autoRotate = width < 40;
@@ -299,7 +315,7 @@ function finishBuild(width) {
 let currentFile = null;
 async function showLibrary() {
   if (!currentFile) return;
-  loadingEl.textContent = 'Loadingâ€¦';
+  loadingEl.textContent = 'Loading…';
   const parts = await getParts(currentFile);
   if (mode !== 'lib') return;
   clearDisplay();
@@ -355,7 +371,7 @@ const textInput = document.getElementById('textInput'), perCapInput = document.g
 const capCountEl = document.getElementById('capCount');
 async function showText() {
   if (mode !== 'text') return;
-  if (!font) { loadingEl.textContent = 'Loading fontâ€¦'; return; }
+  if (!font) { loadingEl.textContent = 'Loading font…'; return; }
   const blank = await getParts(BLANK_FILE);
   const chars = [...textInput.value.replace(/\s+/g, '')];
   const per = Math.max(1, Math.min(6, parseInt(perCapInput.value) || 1));
@@ -367,7 +383,8 @@ async function showText() {
   const size = parseFloat(document.getElementById('textSize').value) || 11;
   const depth = parseFloat(document.getElementById('textDepth').value) || 0.6;
   clearDisplay();
-  const pitch = CAP_SIZE + GAP, cols = Math.min(chunks.length, 10);
+  const maxCols = window.innerWidth <= 768 ? 5 : 10;
+  const pitch = CAP_SIZE + GAP, cols = Math.min(chunks.length, maxCols);
   chunks.forEach((str, i) => {
     const x = (i % cols - (cols - 1) / 2) * pitch;
     const y = -Math.floor(i / cols) * pitch;
@@ -451,7 +468,7 @@ function usedColors() {
 function updateColorInfo() {
   const n = usedColors().length;
   document.getElementById('colorInfo').textContent =
-    `${n} filament color${n > 1 ? 's' : ''} used` + (n > MAX_FILAMENTS ? ` â€” too many! Max ${MAX_FILAMENTS}.` : ' (auto-assigned to AMS slots)');
+    `${n} filament color${n > 1 ? 's' : ''} used` + (n > MAX_FILAMENTS ? ` — too many! Max ${MAX_FILAMENTS}.` : ' (auto-assigned to AMS slots)');
 }
 
 // Bambu Studio system preset names per printer (0.4 mm nozzle, Bambu PLA Basic, 0.20 mm Standard)
@@ -600,10 +617,12 @@ selectEl.value = currentFile;
 showLibrary();
 
 function resize() {
-  renderer.setSize(view.clientWidth, view.clientHeight);
-  camera.aspect = view.clientWidth / view.clientHeight;
+  const w = view.clientWidth || 1, h = view.clientHeight || 1;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
+new ResizeObserver(resize).observe(view);
 addEventListener('resize', resize); resize();
 renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
 </script>
