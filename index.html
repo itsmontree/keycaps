@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Custom Keycap Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; background: #1d1f24; color: #eee; }
+  #panel { width: 330px; padding: 20px; background: #262930; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+  h1 { font-size: 20px; margin: 0; }
+  label { font-size: 13px; color: #aaa; display: block; margin-bottom: 6px; }
+  select, input[type=search], input[type=text], input[type=number] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; }
+  input[type=color] { width: 100%; height: 40px; border: none; border-radius: 6px; background: none; cursor: pointer; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .swatches button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; cursor: pointer; }
+  .tabs { display: flex; gap: 6px; }
+  .tabs button, .btn { flex: 1; padding: 9px; border-radius: 6px; border: 1px solid #444; background: #1d1f24; color: #eee; cursor: pointer; font-size: 13px; }
+  .tabs button.active { background: #4aa3df; border-color: #4aa3df; color: #fff; }
+  .btn.primary { background: #7bc67b; border-color: #7bc67b; color: #111; font-weight: 600; }
+  .btn.orange { background: #f2a541; border-color: #f2a541; color: #111; font-weight: 600; }
+  .hint { font-size: 12px; color: #888; margin-top: 4px; }
+  .row { display: flex; gap: 8px; }
+  .box { background: #1d1f24; border: 1px solid #3a3d45; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  #editing { font-weight: 600; color: #4aa3df; }
+  #view { flex: 1; position: relative; }
+  #loading { position: absolute; top: 12px; left: 12px; font-size: 13px; color: #aaa; }
+  #tip { position: absolute; bottom: 12px; left: 12px; font-size: 12px; color: #777; }
+  .hidden { display: none !important; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+  "fflate": "https://unpkg.com/fflate@0.8.2/esm/browser.js"
+} }
+</script>
+</head>
+<body>
+<div id="panel">
+  <h1>âŒ¨ï¸ Keycap Studio</h1>
+  <div class="tabs">
+    <button id="tabLib" class="active">Design library</button>
+    <button id="tabText">Custom text</button>
+  </div>
+
+  <!-- Library mode -->
+  <div id="libSection">
+    <label>Keycap design</label>
+    <input type="search" id="search" placeholder="Search (e.g. A, cat, apple)...">
+    <select id="model" size="10" style="margin-top:6px"></select>
+  </div>
+
+  <!-- Custom text mode -->
+  <div id="textSection" class="hidden" style="display:flex;flex-direction:column;gap:14px">
+    <div>
+      <label>Text</label>
+      <input type="text" id="textInput" value="HELLO" maxlength="60">
+    </div>
+    <div>
+      <label>Letters per keycap</label>
+      <input type="number" id="perCap" min="1" max="6" value="1">
+      <div class="hint" id="capCount"></div>
+    </div>
+    <div>
+      <label>Font (.ttf / .otf)</label>
+      <input type="file" id="fontFile" accept=".ttf,.otf">
+      <div class="hint" id="fontName">Default: Helvetiker</div>
+    </div>
+    <div class="row">
+      <div style="flex:1"><label>Text size (mm)</label><input type="number" id="textSize" min="2" max="16" step="0.5" value="11"></div>
+      <div style="flex:1"><label>Raise (mm)</label><input type="number" id="textDepth" min="0.2" max="3" step="0.1" value="0.6"></div>
+    </div>
+    <div>
+      <label>Font weight: <span id="weightName">Bold</span></label>
+      <input type="range" id="fontWeight" min="0" max="6" step="1" value="4" style="width:100%">
+      <div class="hint">Thickens or thins the letter outlines â€” works with any font.</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="row" style="align-items:center">
+      <div style="flex:1">Editing: <span id="editing">All keys</span></div>
+      <button class="btn" id="selectAll" style="flex:0 0 auto">Select all</button>
+    </div>
+    <div class="hint" style="margin-top:-6px">Click a keycap in the 3D view to color it individually.</div>
+    <div>
+      <label>Keycap color</label>
+      <input type="color" id="capColor" value="#f4f1ea">
+      <div class="swatches" data-target="capColor"></div>
+    </div>
+    <div>
+      <label>Legend color</label>
+      <input type="color" id="legendColor" value="#e2574c">
+      <div class="swatches" data-target="legendColor"></div>
+    </div>
+  </div>
+
+  <div>
+    <label>Export</label>
+    <label style="margin-top:4px">3MF preset (Bambu Studio)</label>
+    <select id="printerPreset">
+      <option value="X1C">Bambu Lab X1 Carbon</option>
+      <option value="X1">Bambu Lab X1</option>
+      <option value="X1E">Bambu Lab X1E</option>
+      <option value="P1S">Bambu Lab P1S</option>
+      <option value="P1P">Bambu Lab P1P</option>
+      <option value="A1">Bambu Lab A1</option>
+      <option value="A1M">Bambu Lab A1 mini</option>
+      <option value="none">Colors only (no presets)</option>
+    </select>
+    <div class="hint" id="presetHint" style="margin-bottom:8px"></div>
+    <button class="btn orange" id="export3mf" style="width:100%">Download 3MF (with colors)</button>
+    <div class="hint" id="colorInfo"></div>
+    <button class="btn primary" id="exportAll" style="width:100%;margin-top:10px">Download STL (single file)</button>
+    <button class="btn" id="exportParts" style="width:100%;margin-top:6px">Download STL keycap + legend separately</button>
+  </div>
+</div>
+<div id="view"><div id="loading"></div><div id="tip">Drag to rotate Â· Scroll to zoom Â· Click a key to select</div></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TTFLoader } from 'three/addons/loaders/TTFLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { zipSync, strToU8 } from 'fflate';
+
+const PALETTE = ['#f4f1ea','#1e1e1e','#e2574c','#f2a541','#f7d84a','#7bc67b','#4aa3df','#8a6fdf','#f48fb1','#9e9e9e'];
+const TOP_Z = 5.0, EPS = 0.02;   // blank keycap top surface; legends are raised above it
+const CAP_SIZE = 18, GAP = 4;    // keycap footprint (mm) and spacing between caps
+const BLANK_FILE = 'obj_16_keycap.stl';
+const MAX_FILAMENTS = 16;        // Bambu AMS limit (4 AMS x 4 slots)
+
+// ---------- Scene ----------
+const view = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+view.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#1d1f24');
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2000);
+camera.up.set(0, 0, 1);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.2));
+const dir = new THREE.DirectionalLight(0xffffff, 1.5);
+dir.position.set(20, -20, 40);
+scene.add(dir);
+
+const display = new THREE.Group();
+scene.add(display);
+
+function frameCamera(width) {
+  const d = Math.max(30, width * 1.1);
+  camera.position.set(0, -d, d);
+  controls.target.set(0, 0, 3);
+  controls.autoRotate = width < 40;
+  controls.autoRotateSpeed = 1.5;
+}
+
+// ---------- Per-key colors ----------
+const defaults = { cap: '#f4f1ea', legend: '#e2574c' };
+let keyColors = [];   // [{cap, legend}] per key index, persists across rebuilds
+let keys = [];        // [{group, capMat, legMat, label}]
+let selected = -1;    // -1 = all keys
+
+const capColor = document.getElementById('capColor'), legendColor = document.getElementById('legendColor');
+const editingEl = document.getElementById('editing');
+
+function colorsFor(i) { return keyColors[i] ||= { ...defaults }; }
+
+function refreshMaterials() {
+  keys.forEach((k, i) => {
+    const c = colorsFor(i);
+    k.capMat.color.set(c.cap);
+    k.legMat.color.set(c.legend);
+    const glow = i === selected ? 0x223344 : 0x000000;
+    k.capMat.emissive.setHex(glow);
+    k.legMat.emissive.setHex(glow);
+  });
+  updateColorInfo();
+}
+
+function select(i) {
+  selected = i;
+  const c = i < 0 ? defaults : colorsFor(i);
+  capColor.value = c.cap;
+  legendColor.value = c.legend;
+  editingEl.textContent = i < 0 ? 'All keys' : `Key ${i + 1}${keys[i].label ? ' (' + keys[i].label + ')' : ''}`;
+  refreshMaterials();
+}
+
+function setColor(part, value) {
+  if (selected < 0) {
+    defaults[part] = value;
+    keyColors.forEach(c => c[part] = value);
+  } else {
+    colorsFor(selected)[part] = value;
+  }
+  refreshMaterials();
+}
+capColor.oninput = () => setColor('cap', capColor.value);
+legendColor.oninput = () => setColor('legend', legendColor.value);
+document.getElementById('selectAll').onclick = () => select(-1);
+document.querySelectorAll('.swatches').forEach(box => PALETTE.forEach(col => {
+  const b = document.createElement('button');
+  b.style.background = col;
+  b.onclick = () => {
+    const input = document.getElementById(box.dataset.target);
+    input.value = col;
+    input.oninput();
+  };
+  box.appendChild(b);
+}));
+
+// Click a key to select it (ignore drags)
+const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+let downAt = null;
+renderer.domElement.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 4) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.intersectObjects(display.children, true)[0];
+  if (hit) select(hit.object.parent.userData.index);
+  else select(-1);
+});
+
+// ---------- STL loading: split each file into keycap + legend geometries ----------
+function splitGeometry(geo) {
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
+  geo.translate(-c.x, -c.y, 0);
+  const pos = geo.attributes.position.array, nor = geo.attributes.normal.array;
+  const cap = { p: [], n: [] }, leg = { p: [], n: [] };
+  for (let i = 0; i < pos.length; i += 9) {
+    const z0 = pos[i+2], z1 = pos[i+5], z2 = pos[i+8];
+    const isLegend = Math.min(z0, z1, z2) >= TOP_Z - EPS && Math.max(z0, z1, z2) > TOP_Z + EPS;
+    const t = isLegend ? leg : cap;
+    for (let k = 0; k < 9; k++) { t.p.push(pos[i+k]); t.n.push(nor[i+k]); }
+  }
+  const make = t => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(t.p, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(t.n, 3));
+    return g;
+  };
+  return { cap: make(cap), legend: make(leg) };
+}
+
+const stlLoader = new STLLoader();
+const cache = {};
+const loadingEl = document.getElementById('loading');
+async function getParts(file) {
+  if (!cache[file]) cache[file] = splitGeometry(await stlLoader.loadAsync('Chunky+Keycaps_stls/' + encodeURIComponent(file)));
+  return cache[file];
+}
+
+function clearDisplay() {
+  display.traverse(o => { if (o.isMesh) { if (o.userData.ownGeo) o.geometry.dispose(); o.material.dispose(); } });
+  display.clear();
+  keys = [];
+}
+
+function addKey(capGeo, legGeo, x, y, label, ownLegend) {
+  const index = keys.length;
+  const group = new THREE.Group();
+  group.position.set(x, y, 0);
+  group.userData.index = index;
+  const capMat = new THREE.MeshStandardMaterial({ roughness: 0.55 });
+  const legMat = new THREE.MeshStandardMaterial({ roughness: 0.4 });
+  const cap = new THREE.Mesh(capGeo, capMat);
+  cap.userData.part = 'cap';
+  group.add(cap);
+  if (legGeo) {
+    const leg = new THREE.Mesh(legGeo, legMat);
+    leg.userData.part = 'legend';
+    leg.userData.ownGeo = ownLegend;
+    group.add(leg);
+  }
+  display.add(group);
+  keys.push({ group, capMat, legMat, label });
+}
+
+function finishBuild(width) {
+  keyColors.length = Math.max(keyColors.length, keys.length);
+  if (selected >= keys.length) selected = -1;
+  select(selected);
+  loadingEl.textContent = '';
+  frameCamera(width);
+}
+
+// ---------- Library mode ----------
+let currentFile = null;
+async function showLibrary() {
+  if (!currentFile) return;
+  loadingEl.textContent = 'Loadingâ€¦';
+  const parts = await getParts(currentFile);
+  if (mode !== 'lib') return;
+  clearDisplay();
+  addKey(parts.cap, parts.legend, 0, 0, '', false);
+  finishBuild(CAP_SIZE);
+}
+
+// ---------- Custom text mode ----------
+let font = null;
+const fontNameEl = document.getElementById('fontName');
+new FontLoader().load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_regular.typeface.json', f => {
+  if (!font) { font = f; if (mode === 'text') showText(); }
+});
+
+document.getElementById('fontFile').onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const json = new TTFLoader().parse(await file.arrayBuffer());
+    font = new FontLoader().parse(json);
+    fontNameEl.textContent = 'Using: ' + file.name;
+    showText();
+  } catch (err) {
+    fontNameEl.textContent = 'Could not read font: ' + err.message;
+  }
+};
+
+// Weight presets: outline offset as a fraction of text size (negative = thinner)
+const WEIGHTS = [
+  ['Thin', -0.05], ['Light', -0.025], ['Regular', 0], ['Medium', 0.02],
+  ['Bold', 0.04], ['Extra Bold', 0.065], ['Black', 0.09]
+];
+const weightInput = document.getElementById('fontWeight');
+function makeLegend(str, size, depth) {
+  const offset = WEIGHTS[weightInput.value][1] * size;
+  const geo = new TextGeometry(str, {
+    font, size, height: depth, curveSegments: 6,
+    // A zero-height bevel with an outline offset grows/shrinks the glyphs without changing the depth
+    bevelEnabled: offset !== 0, bevelThickness: 0, bevelSize: 0, bevelOffset: offset, bevelSegments: 1
+  });
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox;
+  const w = bb.max.x - bb.min.x, h = bb.max.y - bb.min.y;
+  const maxW = CAP_SIZE - 4;                         // keep 2 mm margin on each side
+  const s = Math.min(1, maxW / w, maxW / h);
+  geo.translate(-(bb.min.x + w / 2), -(bb.min.y + h / 2), 0);
+  geo.scale(s, s, 1);
+  geo.translate(0, 0, TOP_Z - 0.05);                 // sink slightly into the cap so they fuse when printed
+  return geo;
+}
+
+const textInput = document.getElementById('textInput'), perCapInput = document.getElementById('perCap');
+const capCountEl = document.getElementById('capCount');
+async function showText() {
+  if (mode !== 'text') return;
+  if (!font) { loadingEl.textContent = 'Loading fontâ€¦'; return; }
+  const blank = await getParts(BLANK_FILE);
+  const chars = [...textInput.value.replace(/\s+/g, '')];
+  const per = Math.max(1, Math.min(6, parseInt(perCapInput.value) || 1));
+  const chunks = [];
+  for (let i = 0; i < chars.length; i += per) chunks.push(chars.slice(i, i + per).join(''));
+  if (!chunks.length) chunks.push('');
+  capCountEl.textContent = `${chunks.length} keycap${chunks.length > 1 ? 's' : ''} will be made`;
+
+  const size = parseFloat(document.getElementById('textSize').value) || 11;
+  const depth = parseFloat(document.getElementById('textDepth').value) || 0.6;
+  clearDisplay();
+  const pitch = CAP_SIZE + GAP, cols = Math.min(chunks.length, 10);
+  chunks.forEach((str, i) => {
+    const x = (i % cols - (cols - 1) / 2) * pitch;
+    const y = -Math.floor(i / cols) * pitch;
+    addKey(blank.cap, str ? makeLegend(str, size, depth) : null, x, y, str, true);
+  });
+  finishBuild(cols * pitch);
+}
+['textInput', 'perCap', 'textSize', 'textDepth'].forEach(id => document.getElementById(id).oninput = showText);
+weightInput.oninput = () => {
+  document.getElementById('weightName').textContent = WEIGHTS[weightInput.value][0];
+  showText();
+};
+
+// ---------- Mode tabs ----------
+let mode = 'lib';
+const tabLib = document.getElementById('tabLib'), tabText = document.getElementById('tabText');
+function setMode(m) {
+  mode = m;
+  selected = -1;
+  tabLib.classList.toggle('active', m === 'lib');
+  tabText.classList.toggle('active', m === 'text');
+  document.getElementById('libSection').classList.toggle('hidden', m !== 'lib');
+  document.getElementById('textSection').classList.toggle('hidden', m !== 'text');
+  m === 'lib' ? showLibrary() : showText();
+}
+tabLib.onclick = () => setMode('lib');
+tabText.onclick = () => setMode('text');
+
+// ---------- Helpers for export ----------
+function download(data, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type }));
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function baseName() {
+  if (mode === 'text') return 'keycaps_' + (textInput.value.replace(/[^\w]/g, '') || 'blank');
+  return currentFile.replace(/\.stl$/i, '').replace(/[^\w-]/g, '_');
+}
+// World-space, vertex-merged geometry of a mesh (needed for clean, manifold 3MF output)
+function worldGeometry(mesh) {
+  mesh.updateWorldMatrix(true, false);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', mesh.geometry.attributes.position.clone());
+  if (mesh.geometry.index) g.setIndex(mesh.geometry.index.clone());
+  g.applyMatrix4(mesh.matrixWorld);
+  return mergeVertices(g, 1e-4);
+}
+
+// ---------- STL export ----------
+const exporter = new STLExporter();
+function exportSTL(part, filename) {
+  const group = new THREE.Group();
+  display.traverse(m => {
+    if (m.isMesh && (!part || m.userData.part === part) && m.geometry.attributes.position.count) {
+      group.add(new THREE.Mesh(worldGeometry(m)));
+    }
+  });
+  if (!group.children.length) return;
+  download(exporter.parse(group, { binary: true }), filename, 'model/stl');
+}
+document.getElementById('exportAll').onclick = () => exportSTL(null, baseName() + '.stl');
+document.getElementById('exportParts').onclick = () => {
+  exportSTL('cap', baseName() + '_keycap.stl');
+  setTimeout(() => exportSTL('legend', baseName() + '_legend.stl'), 300);
+};
+
+// ---------- 3MF export (Bambu Studio compatible, with filament colors) ----------
+function usedColors() {
+  const list = [];
+  keys.forEach((k, i) => {
+    const c = colorsFor(i);
+    [c.cap, ...(k.group.children.length > 1 ? [c.legend] : [])].forEach(col => {
+      col = col.toUpperCase();
+      if (!list.includes(col)) list.push(col);
+    });
+  });
+  return list;
+}
+function updateColorInfo() {
+  const n = usedColors().length;
+  document.getElementById('colorInfo').textContent =
+    `${n} filament color${n > 1 ? 's' : ''} used` + (n > MAX_FILAMENTS ? ` â€” too many! Max ${MAX_FILAMENTS}.` : ' (auto-assigned to AMS slots)');
+}
+
+// Bambu Studio system preset names per printer (0.4 mm nozzle, Bambu PLA Basic, 0.20 mm Standard)
+const PRINTERS = {
+  X1C: { model: 'Bambu Lab X1 Carbon', printer: 'Bambu Lab X1 Carbon 0.4 nozzle', process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
+  X1:  { model: 'Bambu Lab X1',        printer: 'Bambu Lab X1 0.4 nozzle',        process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
+  X1E: { model: 'Bambu Lab X1E',       printer: 'Bambu Lab X1E 0.4 nozzle',       process: '0.20mm Standard @BBL X1E', filament: 'Bambu PLA Basic @BBL X1E' },
+  P1S: { model: 'Bambu Lab P1S',       printer: 'Bambu Lab P1S 0.4 nozzle',       process: '0.20mm Standard @BBL X1C', filament: 'Bambu PLA Basic @BBL X1C' },
+  P1P: { model: 'Bambu Lab P1P',       printer: 'Bambu Lab P1P 0.4 nozzle',       process: '0.20mm Standard @BBL P1P', filament: 'Bambu PLA Basic @BBL P1P' },
+  A1:  { model: 'Bambu Lab A1',        printer: 'Bambu Lab A1 0.4 nozzle',        process: '0.20mm Standard @BBL A1',  filament: 'Bambu PLA Basic @BBL A1' },
+  A1M: { model: 'Bambu Lab A1 mini',   printer: 'Bambu Lab A1 mini 0.4 nozzle',   process: '0.20mm Standard @BBL A1M', filament: 'Bambu PLA Basic @BBL A1M' },
+  none: null
+};
+const presetSelect = document.getElementById('printerPreset');
+const presetHint = document.getElementById('presetHint');
+function updatePresetHint() {
+  presetHint.textContent = presetSelect.value === 'none'
+    ? 'Only filament colors are saved. Bambu keeps your current printer & filament presets (colors may be replaced by your defaults).'
+    : 'Uses official Bambu presets (PLA Basic, 0.20mm Standard, 0.4 nozzle) — no "customized preset" warning.';
+  localStorage.setItem('printerPreset', presetSelect.value);
+}
+presetSelect.value = localStorage.getItem('printerPreset') || 'X1C';
+presetSelect.onchange = updatePresetHint;
+updatePresetHint();
+
+// Bambu/Orca per-triangle "paint_color" code for filament n (1-based)
+function paintCode(n) {
+  if (n < 3) return (n << 2).toString(16).toUpperCase();
+  return 'C' + (n - 3).toString(16).toUpperCase();
+}
+// The serialized string is nibble-reversed: filament 3 -> "0C", 4 -> "1C"
+function paintAttr(n) { return [...paintCode(n)].reverse().join(''); }
+
+function export3MF() {
+  const colors = usedColors();
+  if (colors.length > MAX_FILAMENTS) { alert(`Too many colors (${colors.length}). Max is ${MAX_FILAMENTS}.`); return; }
+  const fil = col => colors.indexOf(col.toUpperCase()) + 1;
+
+  // Place the build in the middle of the plate (A1 mini is 180 mm, others 256 mm)
+  const half = presetSelect.value === 'A1M' ? 90 : 128;
+  const OFFSET = new THREE.Vector3(half, half, 0);
+  const objectsXml = [], buildXml = [], settingsXml = [];
+  keys.forEach((k, i) => {
+    const c = colorsFor(i);
+    const verts = [], tris = [];
+    k.group.children.forEach(mesh => {
+      if (!mesh.geometry.attributes.position.count) return;
+      const g = worldGeometry(mesh);
+      const p = g.attributes.position.array, idx = g.index.array;
+      const base = verts.length / 3;
+      for (let j = 0; j < p.length; j += 3) verts.push(p[j] + OFFSET.x, p[j+1] + OFFSET.y, p[j+2] + OFFSET.z);
+      const n = fil(mesh.userData.part === 'cap' ? c.cap : c.legend);
+      for (let j = 0; j < idx.length; j += 3) tris.push([idx[j] + base, idx[j+1] + base, idx[j+2] + base, n]);
+    });
+    const id = i + 1;
+    const capFil = fil(c.cap);
+    let v = '', t = '';
+    for (let j = 0; j < verts.length; j += 3) v += `<vertex x="${verts[j].toFixed(4)}" y="${verts[j+1].toFixed(4)}" z="${verts[j+2].toFixed(4)}"/>\n`;
+    for (const [a, b, cc, n] of tris) {
+      // Triangles in the object's own filament need no paint; others are painted with their filament
+      t += `<triangle v1="${a}" v2="${b}" v3="${cc}" pid="1" p1="${n - 1}"${n !== capFil ? ` paint_color="${paintAttr(n)}"` : ''}/>\n`;
+    }
+    const name = k.label ? `Key ${id} - ${k.label}` : `Keycap ${id}`;
+    objectsXml.push(`<object id="${id + 1}" type="model" name="${name}" pid="1" pindex="${capFil - 1}"><mesh><vertices>\n${v}</vertices><triangles>\n${t}</triangles></mesh></object>`);
+    buildXml.push(`<item objectid="${id + 1}" printable="1"/>`);
+    settingsXml.push(`  <object id="${id + 1}">
+    <metadata key="name" value="${name}"/>
+    <metadata key="extruder" value="${capFil}"/>
+  </object>`);
+  });
+
+  const model = `<?xml version="1.0" encoding="UTF-8"?>
+<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">
+<metadata name="Application">BambuStudio-01.09.00.00</metadata>
+<metadata name="Title">${baseName()}</metadata>
+<resources>
+<basematerials id="1">
+${colors.map((col, i) => `<base name="Filament ${i + 1}" displaycolor="${col}FF"/>`).join('\n')}
+</basematerials>
+${objectsXml.join('\n')}
+</resources>
+<build>
+${buildXml.join('\n')}
+</build>
+</model>`;
+
+  const modelSettings = `<?xml version="1.0" encoding="UTF-8"?>
+<config>
+${settingsXml.join('\n')}
+</config>`;
+
+  const preset = PRINTERS[presetSelect.value];
+  const settings = { filament_colour: colors, version: '01.09.00.00' };
+  if (preset) {
+    // Official Bambu system presets matching the chosen printer, so nothing is "customized"
+    Object.assign(settings, {
+      printer_model: preset.model,
+      printer_settings_id: preset.printer,
+      print_settings_id: preset.process,
+      filament_settings_id: colors.map(() => preset.filament),
+      filament_type: colors.map(() => 'PLA'),
+      filament_ids: colors.map(() => 'GFA00'),
+      filament_vendor: colors.map(() => 'Bambu Lab'),
+      from: 'project',
+      name: 'project_settings'
+    });
+  }
+  const projectSettings = JSON.stringify(settings, null, 2);
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
+<Default Extension="config" ContentType="text/xml"/>
+</Types>`;
+  const rels = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
+</Relationships>`;
+
+  const zip = zipSync({
+    '[Content_Types].xml': strToU8(contentTypes),
+    '_rels/.rels': strToU8(rels),
+    '3D/3dmodel.model': strToU8(model),
+    'Metadata/model_settings.config': strToU8(modelSettings),
+    'Metadata/project_settings.config': strToU8(projectSettings)
+  }, { level: 6 });
+  download(zip, baseName() + '.3mf', 'model/3mf');
+}
+document.getElementById('export3mf').onclick = export3MF;
+
+// ---------- Library list ----------
+const models = await (await fetch('models.json')).json();
+const selectEl = document.getElementById('model'), search = document.getElementById('search');
+function fillList() {
+  const q = search.value.toLowerCase();
+  selectEl.innerHTML = '';
+  models.filter(m => m.name.toLowerCase().includes(q)).forEach(m => selectEl.add(new Option(m.name, m.file)));
+  if (currentFile) selectEl.value = currentFile;
+}
+search.oninput = fillList;
+selectEl.onchange = () => { currentFile = selectEl.value; showLibrary(); };
+fillList();
+currentFile = (models.find(m => m.name === 'A') || models[0]).file;
+selectEl.value = currentFile;
+showLibrary();
+
+function resize() {
+  renderer.setSize(view.clientWidth, view.clientHeight);
+  camera.aspect = view.clientWidth / view.clientHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>
