@@ -166,16 +166,25 @@ scene.add(dir);
 const display = new THREE.Group();
 scene.add(display);
 
-let currentWidth = CAP_SIZE;
+let currentWidth = null, userRotated = false;
+controls.addEventListener('start', () => { userRotated = true; controls.autoRotate = false; });
 function frameCamera(width) {
-  currentWidth = width;
+  if (currentWidth === width) return;
   const aspect = Math.max(0.4, (view.clientWidth || 1) / (view.clientHeight || 1));
   const effWidth = aspect < 1 ? width / aspect : width;
   const d = Math.max(30, effWidth * 1.1);
-  camera.position.set(0, -d, d);
-  controls.target.set(0, 0, 3);
-  controls.autoRotate = width < 40;
-  controls.autoRotateSpeed = 1.5;
+  if (currentWidth === null) {
+    camera.position.set(0, -d, d);
+    controls.target.set(0, 0, 3);
+    controls.autoRotateSpeed = 1.5;
+  } else {
+    // Keep the current rotation angle, only scaling distance to fit the new width
+    const offset = camera.position.clone().sub(controls.target);
+    const dir = offset.lengthSq() > 0 ? offset.normalize() : new THREE.Vector3(0, -1, 1).normalize();
+    camera.position.copy(controls.target).addScaledVector(dir, d * Math.SQRT2);
+  }
+  controls.autoRotate = !userRotated && width < 40;
+  currentWidth = width;
 }
 
 // ---------- Per-key colors ----------
