@@ -56,7 +56,7 @@
 <div id="panel">
   <h1>18.studio Keycap Maker</h1>
   <div class="tabs">
-    <button id="tabText" class="active">Văn bản</button>
+    <button id="tabText" class="active">Keycap</button>
     <button id="tabBase">Đế</button>
     <button id="tabPreview">Xem trước</button>
   </div>
@@ -81,6 +81,10 @@
         <button class="btn" id="addIconEnd">+ Thêm cuối</button>
       </div>
       <div id="addedIcons" class="chips"></div>
+    </div>
+    <div>
+      <label>Ghi chú</label>
+      <textarea id="noteInput" rows="3" maxlength="300" placeholder="Ghi chú cho 18.studio (vd: tên, số điện thoại, yêu cầu thêm)..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #444;background:#1d1f24;color:#eee;font:inherit;resize:vertical"></textarea>
     </div>
   </div>
 
@@ -588,9 +592,9 @@ async function showPreview() {
 
 function refreshScene() {
   updateIconControls();
-  if (mode === 'text') showText();
-  else if (mode === 'base') showBase();
-  else if (mode === 'preview') showPreview();
+  if (mode === 'text') return showText();
+  else if (mode === 'base') return showBase();
+  else if (mode === 'preview') return showPreview();
 }
 
 textInput.oninput = refreshScene;
@@ -613,7 +617,7 @@ function setMode(m) {
   document.getElementById('baseSection').classList.toggle('hidden', m !== 'base' && m !== 'preview');
   document.getElementById('keyColorBox').classList.toggle('hidden', m === 'base');
 
-  refreshScene();
+  return refreshScene();
 }
 tabText.onclick = () => setMode('text');
 tabBase.onclick = () => setMode('base');
@@ -637,12 +641,41 @@ function usedColors() {
   return list;
 }
 
-function exportPNG() {
+function wrapLines(ctx, text, maxW) {
+  const lines = [];
+  text.split(/\r?\n/).forEach(para => {
+    let line = '';
+    para.split(' ').forEach(word => {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = word; }
+      else line = test;
+    });
+    lines.push(line);
+  });
+  return lines;
+}
+
+// Always exports the "Xem trước" (keycaps on base) view, whichever tab is open
+async function exportPNG() {
+  const prevMode = mode;
+  if (mode !== 'preview') await setMode('preview');
   keys.forEach(k => { k.capMat.emissive.setHex(0); k.legMat.emissive.setHex(0); });
   renderer.render(scene, camera);
 
   const src = renderer.domElement;
-  const footerH = Math.max(70, Math.round(src.height * 0.1));
+  const baseFooterH = Math.max(70, Math.round(src.height * 0.1));
+  const fontSize = Math.max(13, Math.round(baseFooterH * 0.25));
+  const pad = Math.round(baseFooterH * 0.28);
+
+  // Measure note lines first so the footer can grow to fit them
+  const note = document.getElementById('noteInput').value.trim();
+  const measure = document.createElement('canvas').getContext('2d');
+  const noteFont = `400 ${Math.round(fontSize * 0.9)}px system-ui, sans-serif`;
+  measure.font = noteFont;
+  const noteLines = note ? wrapLines(measure, 'Ghi chú: ' + note, src.width - pad * 2) : [];
+  const lineH = Math.round(fontSize * 1.35);
+  const footerH = baseFooterH + (noteLines.length ? noteLines.length * lineH + pad : 0);
+
   const out = document.createElement('canvas');
   out.width = src.width;
   out.height = src.height + footerH;
@@ -652,20 +685,16 @@ function exportPNG() {
   ctx.fillStyle = '#262930';
   ctx.fillRect(0, src.height, out.width, footerH);
 
-  const pad = Math.round(footerH * 0.28);
-  const fontSize = Math.max(13, Math.round(footerH * 0.25));
   ctx.fillStyle = '#eee';
   ctx.font = `600 ${fontSize}px system-ui, sans-serif`;
   const slots = getActiveSlots();
-  const summary = mode === 'base'
-    ? `18.studio · Đế (${slots} khe) · Màu đế: ${baseColor.value.toUpperCase()}`
-    : `18.studio · Đế (${slots} khe) · Đế ${baseColor.value.toUpperCase()} · ${keys.length} phím`;
-  ctx.fillText(summary, pad, src.height + Math.round(footerH * 0.62));
+  const summary = `18.studio · Đế (${slots} khe) · Đế ${baseColor.value.toUpperCase()} · ${keys.length} phím`;
+  ctx.fillText(summary, pad, src.height + Math.round(baseFooterH * 0.62));
 
   const cols = usedColors();
-  const r = Math.max(9, Math.round(footerH * 0.22));
+  const r = Math.max(9, Math.round(baseFooterH * 0.22));
   let cx = out.width - pad - r;
-  const cy = src.height + Math.round(footerH / 2);
+  const cy = src.height + Math.round(baseFooterH / 2);
   for (let i = cols.length - 1; i >= 0; i--) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -677,7 +706,12 @@ function exportPNG() {
     cx -= r * 2.5;
   }
 
-  refreshMaterials();
+  if (noteLines.length) {
+    ctx.fillStyle = '#ccc';
+    ctx.font = noteFont;
+    noteLines.forEach((ln, i) => ctx.fillText(ln, pad, src.height + baseFooterH + i * lineH + Math.round(lineH * 0.6)));
+  }
+
   out.toBlob(blob => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -685,6 +719,9 @@ function exportPNG() {
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }, 'image/png');
+
+  if (prevMode !== 'preview') setMode(prevMode);
+  else refreshMaterials();
 }
 document.getElementById('exportPng').onclick = exportPNG;
 
